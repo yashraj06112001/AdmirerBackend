@@ -25,6 +25,8 @@ Route::post("/signUp",[signUp::class,"signUpHandler"])->name("signUp");
 Route::post("/Login",[LoginHandler::class,'loginHandling'])->name("Login");
 Route::middleware('auth:sanctum')->post("/Verify",[VerifyPageAcessController::class,"verify"])->name("Verify");
 
-Route::post('/cart-products', [CartController::class, 'getCartProducts']);
-Route::post('/cart-remove', [CartController::class, 'removeFromCart']);
-Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/cart-products', [CartController::class, 'getCartProducts']); // ✅ GET API
+    Route::post('/cart-remove', [CartController::class, 'removeFromCart']);
+    Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
+});
