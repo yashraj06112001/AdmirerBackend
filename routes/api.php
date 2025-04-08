@@ -21,4 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post("/signUp",[signUp::class,"signUpHandler"])->name("signUp");
 Route::post("/Login",[LoginHandler::class,'loginHandling'])->name("Login");
-Route::post("/Verify",[VerifyPageAcessController::class,"verify"])->name("Verify");
+Route::middleware('auth:sanctum')->post("/Verify",[VerifyPageAcessController::class,"verify"])->name("Verify");
