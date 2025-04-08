@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\signUp;
+use App\Http\Controllers\LoginHandler;
+use App\Http\Controllers\VerifyPageAcessController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post("/signUp",[signUp::class,"signUpHandler"])->name("signUp");
+Route::post("/Login",[LoginHandler::class,'loginHandling'])->name("Login");
+Route::post("/Verify",[VerifyPageAcessController::class,"verify"])->name("Verify");
