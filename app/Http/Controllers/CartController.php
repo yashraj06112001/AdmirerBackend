@@ -3,12 +3,69 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\AddCart;
 
 
 class CartController extends Controller
 {
+
+    public function getAllUserAddresses()
+    {
+        $userId = Auth::id();
+        // 1. Get User Primary Address Info
+        $user = DB::table('user as u')
+            ->leftJoin('countries as c', 'c.id', '=', 'u.country')
+            ->leftJoin('state_list as s', 's.id', '=', 'u.state')
+            ->select(
+                'u.id',
+                'u.firstname',
+                'u.lastname',
+                'u.mobile',
+                'u.mobileverified',
+                'u.email',
+                'u.emailverified',
+                'u.flat',
+                'u.street',
+                'u.locality',
+                'u.city',
+                'u.zipcode',
+                'u.state as state_id',
+                's.state as state_name',
+                'u.country as country_id',
+                'c.country_name',
+                'u.addr_type'
+            )
+            ->where('u.id', $userId)
+            ->first();
+    
+        // 2. Get Shipping Addresses
+        $shippingAddresses = DB::table('user_shipping_addresses as sp')
+            ->join('countries as c', 'c.id', '=', 'sp.country')
+            ->join('state_list as sl', 'sl.id', '=', 'sp.state')
+            ->select(
+                'sp.*',
+                'c.country_name',
+                'sl.state as state_name'
+            )
+            ->where('sp.user_id', $userId)
+            ->where('sp.status', 'Active')
+            ->orderByDesc('sp.id')
+            ->get();
+    
+        // 3. Final Response
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'User & Shipping addresses fetched successfully!',
+            'data'    => [
+                'user_address'     => $user,
+                'shipping_address' => $shippingAddresses
+            ]
+        ]);
+    }
+    
+    
     public function getCartProducts(Request $request)
     {
         $userId = Auth::id();
@@ -70,13 +127,16 @@ class CartController extends Controller
                 $totals['total_amount']   += $discount * $quantity;
             }
         }
-    
+
+        $userAddresses = $this->getAllUserAddresses()->getData()->data;
+
         return response()->json([
             'status'  => 'success',
             'message' => 'Cart Fetched Successfully!',
             'data'    => [
                 'products' => $products,
-                'totals'   => $totals
+                'totals'   => $totals,
+                'user_addresses'  => $userAddresses
             ]
         ], 200);
     }
