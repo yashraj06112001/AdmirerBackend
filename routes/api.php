@@ -6,6 +6,7 @@ use App\Http\Controllers\signUp;
 use App\Http\Controllers\LoginHandler;
 use App\Http\Controllers\VerifyPageAcessController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,5 @@ Route::middleware('auth:sanctum')->post("/Verify",[VerifyPageAcessController::cl
 Route::post('/cart-products', [CartController::class, 'getCartProducts']);
 Route::post('/cart-remove', [CartController::class, 'removeFromCart']);
 Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
+Route::get("/product-category",[ProductCategoryController::class,"categorySubcategary"])->name("category");
+Route::get("/price-category",[ProductCategoryController::class,"PriceCategory"])->name("price-category");
