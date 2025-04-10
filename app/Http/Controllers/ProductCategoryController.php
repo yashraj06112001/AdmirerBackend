@@ -10,7 +10,7 @@ class ProductCategoryController extends Controller
     public function categorySubcategary(Request $request)
     {
         $productCategory=[
-            "Ring"=>[
+            "Jwellery"=>[
                "Couple Ring",
                "Corner Ring",
             ],
