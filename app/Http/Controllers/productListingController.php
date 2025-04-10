@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\description;
+use Illuminate\Support\Facades\DB;
+class productListingController extends Controller
+{
+    //
+    public function ShowProducts(Request $request)
+    {
+        $productCompleteDetails=Product::leftJoin("description","products.id","=","description.p_id")
+        ->select("products.*","description.*")
+        ->get()
+        ->map(function ($item) {
+            if (isset($item->description)) {
+                $cleanText = strip_tags($item->description);          // Remove HTML tags
+                $cleanText = html_entity_decode($cleanText);           // Decode HTML entities
+                $cleanText = str_replace(["\r", "\n"], '', $cleanText); // Remove \r and \n
+                $item->description = $cleanText;
+            }
+            return $item;
+        });
+        return response()->json(data: $productCompleteDetails);
+    }
+
+    public function productAfterFilterListing(Request $request)
+    {
+        $category = $request->category;
+        $subCategory = $request->subCategory;
+        $minPrice = $request->minPrice;
+        $maxPrice = $request->maxPrice;
+        
+        // Get Category ID
+        $catId = DB::table('category')
+            ->where("cat_name", $category)
+            ->where('status', 'active')
+            ->value('id'); // use value() for single value
+        
+        // Initialize subCatId to null
+        $subCatId = null;
+        if ($subCategory) {
+            $subCatId = DB::table("subcategory")
+                ->where('sub_cat_name', $subCategory)
+                ->where('status', 'active')
+                ->value('id'); // use value() instead of get()
+        }
+        
+        // Build the product query
+        $productQuery = Product::leftJoin("description", "products.id", "=", "description.p_id")
+            ->select("products.*", "description.*")
+            ->where('products.discount', '>=', $minPrice)
+            ->where('products.discount', '<=', $maxPrice)
+            ->where('products.cat_id', $catId)
+            ->where('products.status','Active');
+        
+        // Conditionally add subcategory filter
+        if ($subCatId) {
+            $productQuery->where('products.subcat_id', $subCatId);
+        }
+        
+        $productCompleteDetails = $productQuery->get()->map(function ($item) {
+            if (isset($item->description)) {
+                $cleanText = strip_tags($item->description);
+                $cleanText = html_entity_decode($cleanText);
+                $cleanText = str_replace(["\r", "\n"], '', $cleanText);
+                $item->description = $cleanText;
+            }
+            return $item;
+        });
+        
+        return response()->json($productCompleteDetails);
+    }
+}

@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginHandler;
 use App\Http\Controllers\VerifyPageAcessController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\productListingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,3 +35,8 @@ Route::get("/product-category",[ProductCategoryController::class,"categorySubcat
 Route::get("/price-category",[ProductCategoryController::class,"PriceCategory"])->name("price-category");
 Route::middleware('auth:sanctum')->post("/logout",[logoutHandlerController::class,"logout"])->name("logout");
 Route::middleware('auth:sanctum')->post("/logoutAll",[VerifyPageAcessController::class,"logoutAll"])->name("logoutAll");
+Route::get("/productListing",[productListingController::class,"ShowProducts"])->name("productShow");
+// api to give subcategories based on category
+Route::post("/catSubCat",[ProductCategoryController::class,"categoryBasedSubcategory"])->name("subCategory");
+// Product after applying filters of category, subcategory, maxPrice, minPrice
+Route::post('/productFilteredList',[productListingController::class,'productAfterFilterListing'])->name("filteredProduct");
