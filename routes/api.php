@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\logoutHandlerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\signUp;
@@ -31,3 +32,5 @@ Route::post('/cart-remove', [CartController::class, 'removeFromCart']);
 Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
 Route::get("/product-category",[ProductCategoryController::class,"categorySubcategary"])->name("category");
 Route::get("/price-category",[ProductCategoryController::class,"PriceCategory"])->name("price-category");
+Route::middleware('auth:sanctum')->post("/logout",[logoutHandlerController::class,"logout"])->name("logout");
+Route::middleware('auth:sanctum')->post("/logoutAll",[VerifyPageAcessController::class,"logoutAll"])->name("logoutAll");
