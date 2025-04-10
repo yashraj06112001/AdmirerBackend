@@ -8,15 +8,26 @@ class ProductCategoryController extends Controller
 {
     //
     public function categorySubcategary(Request $request)
-    {
-        $productCategory=[
-            "Jwellery"=>[
-               "Couple Ring",
-               "Corner Ring",
-            ],
-            
-            ];
-            return response()->json($productCategory);
+    {   // table name category, subcategory
+        $categories = DB::table('category')
+        ->where('status', 'active')
+        ->get();
+
+    $productCategory = [];
+
+    foreach ($categories as $category) {
+        // Fetch active subcategories for this category
+        $subcategories = DB::table('subcategory')
+            ->where('status', 'active')
+            ->where('cat_id', $category->id)
+            ->pluck('sub_cat_name')
+            ->toArray();
+
+        // Add to the final array
+        $productCategory[$category->cat_name] = $subcategories;
+    }
+
+    return response()->json($productCategory);
     }
 
     public function PriceCategory(Request $request)
@@ -43,5 +54,39 @@ class ProductCategoryController extends Controller
         "maxPrice" => $maxPrice
         ];
         return response()->json($priceRange);
+    }
+
+
+
+    public function categoryBasedSubcategory(Request $request)
+    {
+        $categoryName = $request->input('category');
+
+        // Fetch the category by name and status active
+        $category = DB::table('category')
+            ->where('cat_name', $categoryName)
+            ->where('status', 'active')
+            ->first();
+    
+        if (!$category) {
+            return response()->json([
+                'error' => 'Category not found or inactive',
+                'category name'=>$categoryName,
+                'request'=>$request
+            ], 404);
+        }
+    
+        // Fetch active subcategories for this category
+        $subcategories = DB::table('subcategory')
+            ->where('status', 'active')
+            ->where('cat_id', $category->id)
+            ->pluck('sub_cat_name')
+            ->toArray();
+    
+        $response = [
+            $category->cat_name => $subcategories
+        ];
+    
+        return response()->json($response);
     }
 }
