@@ -7,6 +7,9 @@ use App\Http\Controllers\LoginHandler;
 use App\Http\Controllers\VerifyPageAcessController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\ProductDetailsController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\AddToCartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,3 +36,10 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get("/product-category",[ProductCategoryController::class,"categorySubcategary"])->name("category");
 Route::get("/price-category",[ProductCategoryController::class,"PriceCategory"])->name("price-category");
 });
+
+Route::get('/product-details/{id}', [ProductDetailsController::class, 'getProductDetails']);
+
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggleWishlist']);
+
+Route::post('/add-to-cart', [AddToCartController::class, 'addToCart']);
+Route::post('/buy-now', [AddToCartController::class, 'buyNow']);
