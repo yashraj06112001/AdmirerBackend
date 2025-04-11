@@ -50,11 +50,11 @@ class productListingController extends Controller
         
         // Build the product query
         $productQuery = Product::leftJoin("description", "products.id", "=", "description.p_id")
-            ->select("products.*", "description.*")
-            ->where('products.discount', '>=', $minPrice)
-            ->where('products.discount', '<=', $maxPrice)
-            ->where('products.cat_id', $catId)
-            ->where('products.status','Active');
+        ->select("products.*", "description.description")
+        ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) >= ?', [$minPrice])
+        ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) <= ?', [$maxPrice])
+        ->where('products.cat_id', $catId)
+        ->where('products.status','Active');
         
         // Conditionally add subcategory filter
         if ($subCatId) {
