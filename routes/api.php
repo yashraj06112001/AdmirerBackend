@@ -53,3 +53,4 @@ Route::post('/productFilteredList',[productListingController::class,'productAfte
 
 // Profile API
 Route::middleware('auth:sanctum')->get("/user-profile",[DashboardController::class,"profileInfo"])->name("user-profile");
+Route::middleware('auth:sanctum')->get('/user-order-detail',[DashboardController::class,'AllOrderStatus'])->name("order-details");
