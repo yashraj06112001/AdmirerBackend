@@ -35,9 +35,11 @@ Route::post("/Login",[LoginHandler::class,'loginHandling'])->name("Login");
 Route::middleware('auth:sanctum')->post("/Verify",[VerifyPageAcessController::class,"verify"])->name("Verify");
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/cart-products', [CartController::class, 'getCartProducts']); // ✅ GET API
+    Route::get('/cart-products', [CartController::class, 'getCartProducts']); 
     Route::post('/cart-remove', [CartController::class, 'removeFromCart']);
     Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
+});
+
 //API to get all product-category and sub-category
 Route::get("/product-category",[ProductCategoryController::class,"categorySubcategary"])->name("category");
 //API to get price-category range
@@ -51,11 +53,18 @@ Route::get("/productListing",[productListingController::class,"ShowProducts"])->
 Route::post("/catSubCat",[ProductCategoryController::class,"categoryBasedSubcategory"])->name("subCategory");
 // Product after applying filters of category, subcategory, maxPrice, minPrice
 Route::post('/productFilteredList',[productListingController::class,'productAfterFilterListing'])->name("filteredProduct");
-});
 
+// get all product details and related product details 
 Route::get('/product-details/{id}', [ProductDetailsController::class, 'getProductDetails']);
-
+// add wishlist and remove wishlist
 Route::post('/wishlist/toggle', [WishlistController::class, 'toggleWishlist']);
-
+// add to cart and remove cart
 Route::post('/add-to-cart', [AddToCartController::class, 'addToCart']);
+// buy now 
 Route::post('/buy-now', [AddToCartController::class, 'buyNow']);
+// get user all wishlist
+Route::middleware('auth:sanctum')->get('/user/wishlist', [WishlistController::class, 'getUserWishlist']);
+// remove user wishlist
+Route::middleware('auth:sanctum')->post('/user/wishlist/remove', [WishlistController::class, 'removeFromWishlist']);
+// move to cart wishlist
+Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistController::class, 'moveToCart']);
