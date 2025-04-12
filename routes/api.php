@@ -51,6 +51,9 @@ Route::post('/productFilteredList',[productListingController::class,'productAfte
 //.................................................Dashboard API............................................................................
 
 
-// Profile API
+//Profile API get and Update API 's
 Route::middleware('auth:sanctum')->get("/user-profile",[DashboardController::class,"profileInfo"])->name("user-profile");
+Route::middleware('auth:sanctum')->post('/updateProfile',[DashboardController::class,'profileUpdate'])->name('update_profile');
+//Order API
 Route::middleware('auth:sanctum')->get('/user-order-detail',[DashboardController::class,'AllOrderStatus'])->name("order-details");
+Route::middleware('auth:sanctum')->get('/status-history',[DashboardController::class,'orderStatus'])->name('order-status');

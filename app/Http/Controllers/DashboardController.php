@@ -43,60 +43,107 @@ class DashboardController extends Controller
         
     }
    
+    public function profileUpdate(Request $request)
+    {
+        $userId = Auth::id(); // Get the authenticated user's ID
 
-    // public function AllOrderStatus()
-    // {
-    //   $user=Auth::user();
-    //   $id=$user->id;      
-    //   $results = DB::table('order_details')
-    // ->leftJoin('products', 'order_details.productid', '=', 'products.id')
-    // ->leftJoin('order_status', 'order_details.order_id', '=', 'order_status.order_id')
-    // ->select(
-    //     'order_details.order_id',
-    //     'order_details.id as id',
-    //     'order_details.price as order_price',
-    //     'order_details.quantity as number_of_products',
-    //     'products.product_name as product_name',
-    //     'products.discount as product_price',
-    //     'order_status.tracking_status',
-    //     'order_status.date as date',
-    //     'order_status.time as time'
-    // ) ->where("order_details.user_id",'=',$id)
-    // ->get();
-    //  return response()->json([
-    //     "data"=>$results,
-    //  ]);
-     
+        if (!$userId) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+    
+        // Define the update data (fallback to existing values if not provided)
+        $updateData = [
+            'firstname'     => $request->firstName ?? Auth::user()->firstname,
+            'lastname'      => $request->lastName ?? Auth::user()->lastname,
+            'mobile'        => $request->mobile ?? Auth::user()->mobile,
+            'email'         => $request->email ?? Auth::user()->email,
+            'flat'          => $request->flat ?? Auth::user()->flat,
+            'street'        => $request->street ?? Auth::user()->street,
+            'locality'      => $request->locality ?? Auth::user()->locality,
+            'city'          => $request->city ?? Auth::user()->city,
+            'zipcode'       => $request->zipcode ?? Auth::user()->zipcode,
+            'state'         => $request->state ?? Auth::user()->state,
+            'country'       => $request->country ?? Auth::user()->country,
+            'address_type'  => $request->address_type ?? Auth::user()->address_type,
+        ];
+    
+        // Perform the update using Query Builder
+        DB::table('user') // or 'users' (match your actual table name)
+            ->where('id', $userId)
+            ->update($updateData);
+    
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
+    
 
-    // }
+    }
 
     public function AllOrderStatus()
     {
         $user=Auth::user();
         $id=$user->id;
-        $result = DB::table('order_details')
-        ->leftJoin('order_status', 'order_details.order_id', '=', 'order_status.order_id')
-        ->leftJoin('user', 'user.id', '=', 'order_details.user_id') // use 'users' if your table is plural
-        ->select(
-            'order_details.productname as Product name',
-            'order_details.price as Product Price',
-            'order_details.order_id as order ID',
-            'order_details.payment_status as Payment',
-            'order_details.productimage as image',
-            'order_details.date as Order Date',
-            'order_details.time as Order Time',
-            'user.firstname as first name',
-            'user.lastname as last name',
-            'order_status.tracking_status as status'
-        )
-        ->where('order_details.user_id', '=', $id)
-        ->orderBy('order_details.date', 'desc')
-        ->orderBy('order_details.time', 'desc')
-        ->get();
+           // Subquery to get the latest status per order_id
+    $latestStatusSubquery = DB::table('order_status as os1')
+    ->select('os1.order_id', 'os1.tracking_status')
+    ->join(DB::raw('(SELECT order_id, MAX(id) as max_id FROM order_status GROUP BY order_id) as latest'), function($join) {
+        $join->on('os1.order_id', '=', 'latest.order_id')
+             ->on('os1.id', '=', 'latest.max_id');
+    });
 
-        return response()->json([
-            "data"=>$result,
-        ]);
+$result = DB::table('order_details')
+    ->leftJoinSub($latestStatusSubquery, 'latest_status', function ($join) {
+        $join->on('order_details.order_id', '=', 'latest_status.order_id');
+    })
+    ->leftJoin('user', 'user.id', '=', 'order_details.user_id') // use 'users' if your table is plural
+    ->select(
+        'order_details.productname as Product name',
+        'order_details.price as Product Price',
+        'order_details.order_id as order ID',
+        'order_details.payment_status as Payment',
+        'order_details.productimage as image',
+        'order_details.date as Order Date',
+        'order_details.time as Order Time',
+        'user.firstname as first name',
+        'user.lastname as last name',
+    )
+    ->where('order_details.user_id', '=', $id)
+    ->orderBy('order_details.date', 'desc')
+    ->orderBy('order_details.time', 'desc')
+    ->get();
+
+return response()->json([
+    "data" => $result,
+]);
     }
+   
+public function orderStatus(Request $request)
+{
+    $user = Auth::user();
+    
+    // First get all distinct order_ids for the user
+    $orderIds = DB::table('order_status')
+        ->select('order_id')
+        ->where('user_id', $user->id)
+        ->groupBy('order_id')
+        ->pluck('order_id');
+    
+    $result = [];
+    
+    foreach ($orderIds as $orderId) {
+        // Get all tracking_status records for this order_id, ordered by creation time
+        $statuses = DB::table('order_status')
+            ->select('tracking_status')
+            ->where('order_id', $orderId)
+            ->orderBy('date', 'asc') // assuming you have a created_at column
+            ->pluck('tracking_status')
+            ->toArray();
+        
+        $result[$orderId] = $statuses;
+    }
+    
+    return response()->json([
+        "data" => $result
+    ]);
+}
+
 
 }
