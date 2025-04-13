@@ -10,7 +10,7 @@ class ProductCategoryController extends Controller
     public function categorySubcategary(Request $request)
     {   // table name category, subcategory
         $categories = DB::table('category')
-        ->where('status', 'active')
+        ->where('status', 'Active')
         ->get();
 
     $productCategory = [];
@@ -18,7 +18,7 @@ class ProductCategoryController extends Controller
     foreach ($categories as $category) {
         // Fetch active subcategories for this category
         $subcategories = DB::table('subcategory')
-            ->where('status', 'active')
+            ->where('status', 'Active')
             ->where('cat_id', $category->id)
             ->pluck('sub_cat_name')
             ->toArray();
@@ -32,7 +32,7 @@ class ProductCategoryController extends Controller
 
     public function PriceCategory(Request $request)
     {   $minPrice = DB::table('products')
-        ->where('status', '!=', 'inactive') // Exclude inactive products
+        ->where('status', '!=', 'inActive') // Exclude inactive products
         ->whereNotNull('discount') // Ensure discount is not null
         ->where('discount', '!=', '') // Ensure discount is not empty
         ->selectRaw('MIN(CAST(discount AS SIGNED)) as min_discount') // Convert VARCHAR to integer
@@ -40,7 +40,7 @@ class ProductCategoryController extends Controller
         // If you want to return 0 when no discounts exist instead of null:
        $minPrice = $minPrice ?? 0;
        $maxPrice = DB::table('products')
-    ->where('status', '!=', 'inactive') // Skip inactive products
+    ->where('status', '!=', 'inActive') // Skip inactive products
     ->whereNotNull('discount') // Ensure discount is not NULL
     ->where('discount', '!=', '') // Skip empty strings
     ->selectRaw('MAX(CAST(discount AS SIGNED)) as max_discount') // Convert VARCHAR → INT & get MAX
@@ -65,7 +65,7 @@ class ProductCategoryController extends Controller
         // Fetch the category by name and status active
         $category = DB::table('category')
             ->where('cat_name', $categoryName)
-            ->where('status', 'active')
+            ->where('status', 'Active')
             ->first();
     
         if (!$category) {
@@ -78,7 +78,7 @@ class ProductCategoryController extends Controller
     
         // Fetch active subcategories for this category
         $subcategories = DB::table('subcategory')
-            ->where('status', 'active')
+            ->where('status', 'Active')
             ->where('cat_id', $category->id)
             ->pluck('sub_cat_name')
             ->toArray();
