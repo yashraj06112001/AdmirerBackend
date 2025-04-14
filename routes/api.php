@@ -13,6 +13,7 @@ use App\Http\Controllers\productListingController;
 use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AddToCartController;
+use App\Http\Controllers\HomepageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,3 +76,6 @@ Route::middleware('auth:sanctum')->get('/user/wishlist', [WishlistController::cl
 Route::middleware('auth:sanctum')->post('/user/wishlist/remove', [WishlistController::class, 'removeFromWishlist']);
 // move to cart wishlist
 Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistController::class, 'moveToCart']);
+
+// Homepage banner img url
+Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
