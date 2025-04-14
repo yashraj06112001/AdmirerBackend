@@ -95,15 +95,15 @@ $result = DB::table('order_details')
     })
     ->leftJoin('user', 'user.id', '=', 'order_details.user_id') // use 'users' if your table is plural
     ->select(
-        'order_details.productname as Product name',
-        'order_details.price as Product Price',
-        'order_details.order_id as order ID',
-        'order_details.payment_status as Payment',
+        'order_details.productname as product_name',
+        'order_details.price as product_price',
+        'order_details.order_id as order_id',
+        'order_details.payment_status as payment',
         'order_details.productimage as image',
-        'order_details.date as Order Date',
-        'order_details.time as Order Time',
-        'user.firstname as first name',
-        'user.lastname as last name',
+        'order_details.date as order_Date',
+        'order_details.time as order_Time',
+        'user.firstname as first_name',
+        'user.lastname as last_name',
     )
     ->where('order_details.user_id', '=', $id)
     ->orderBy('order_details.date', 'desc')
