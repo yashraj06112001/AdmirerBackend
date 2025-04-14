@@ -10,6 +10,10 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\productListingController;
+use App\Http\Controllers\ProductDetailsController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\AddToCartController;
+use App\Http\Controllers\HomepageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,9 +36,12 @@ Route::post("/Login",[LoginHandler::class,'loginHandling'])->name("Login");
 //API to verify user logged in or not
 Route::middleware('auth:sanctum')->post("/Verify",[VerifyPageAcessController::class,"verify"])->name("Verify");
 
-Route::post('/cart-products', [CartController::class, 'getCartProducts']);
-Route::post('/cart-remove', [CartController::class, 'removeFromCart']);
-Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/cart-products', [CartController::class, 'getCartProducts']); 
+    Route::post('/cart-remove', [CartController::class, 'removeFromCart']);
+    Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
+});
+
 //API to get all product-category and sub-category
 Route::get("/product-category",[ProductCategoryController::class,"categorySubcategary"])->name("category");
 //API to get price-category range
@@ -57,3 +64,21 @@ Route::middleware('auth:sanctum')->post('/updateProfile',[DashboardController::c
 //Order API
 Route::middleware('auth:sanctum')->get('/user-order-detail',[DashboardController::class,'AllOrderStatus'])->name("order-details");
 Route::middleware('auth:sanctum')->get('/status-history',[DashboardController::class,'orderStatus'])->name('order-status');
+
+// get all product details and related product details 
+Route::get('/product-details/{id}', [ProductDetailsController::class, 'getProductDetails']);
+// add wishlist and remove wishlist
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggleWishlist']);
+// add to cart and remove cart
+Route::post('/add-to-cart', [AddToCartController::class, 'addToCart']);
+// buy now 
+Route::post('/buy-now', [AddToCartController::class, 'buyNow']);
+// get user all wishlist
+Route::middleware('auth:sanctum')->get('/user/wishlist', [WishlistController::class, 'getUserWishlist']);
+// remove user wishlist
+Route::middleware('auth:sanctum')->post('/user/wishlist/remove', [WishlistController::class, 'removeFromWishlist']);
+// move to cart wishlist
+Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistController::class, 'moveToCart']);
+
+// Homepage banner img url
+Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);

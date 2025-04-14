@@ -8,7 +8,7 @@ class AddCart extends Model
 {
     protected $table = 'add_cart';
 
-    public $timestamps = false; // ✅ Add this line
+    public $timestamps = false; 
 
     public function product()
     {
