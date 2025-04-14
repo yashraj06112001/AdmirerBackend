@@ -49,7 +49,7 @@ class productListingController extends Controller
         
         // Get Category ID
         $catId = DB::table('category')
-            ->where("cat_name", $category)
+            ->where("id", $category)
             ->where('status', 'Active')
             ->value('id'); // use value() for single value
         
@@ -57,7 +57,7 @@ class productListingController extends Controller
         $subCatId = null;
         if ($subCategory) {
             $subCatId = DB::table("subcategory")
-                ->where('sub_cat_name', $subCategory)
+                ->where('id', $subCategory)
                 ->where('status', 'Active')
                 ->value('id'); // use value() instead of get()
         }
