@@ -10,7 +10,7 @@ class ProductCategoryController extends Controller
     public function categorySubcategary(Request $request)
     {   // table name category, subcategory
         $categories = DB::table('category')
-        ->where('status', 'active')
+        ->where('status', 'Active')
         ->get();
 
     $productCategory = [];
@@ -18,7 +18,7 @@ class ProductCategoryController extends Controller
     foreach ($categories as $category) {
         // Fetch active subcategories for this category
         $subcategories = DB::table('subcategory')
-            ->where('status', 'active')
+            ->where('status', 'Active')
             ->where('cat_id', $category->id)
             ->pluck('sub_cat_name')
             ->toArray();
@@ -65,7 +65,7 @@ class ProductCategoryController extends Controller
         // Fetch the category by name and status active
         $category = DB::table('category')
             ->where('cat_name', $categoryName)
-            ->where('status', 'active')
+            ->where('status', 'Active')
             ->first();
     
         if (!$category) {
@@ -78,7 +78,7 @@ class ProductCategoryController extends Controller
     
         // Fetch active subcategories for this category
         $subcategories = DB::table('subcategory')
-            ->where('status', 'active')
+            ->where('status', 'Active')
             ->where('cat_id', $category->id)
             ->pluck('sub_cat_name')
             ->toArray();

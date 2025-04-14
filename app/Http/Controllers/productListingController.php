@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\description;
@@ -36,7 +35,7 @@ class productListingController extends Controller
         // Get Category ID
         $catId = DB::table('category')
             ->where("cat_name", $category)
-            ->where('status', 'active')
+            ->where('status', 'Active')
             ->value('id'); // use value() for single value
         
         // Initialize subCatId to null
@@ -44,13 +43,14 @@ class productListingController extends Controller
         if ($subCategory) {
             $subCatId = DB::table("subcategory")
                 ->where('sub_cat_name', $subCategory)
-                ->where('status', 'active')
+                ->where('status', 'Active')
                 ->value('id'); // use value() instead of get()
         }
         
         // Build the product query
         $productQuery = Product::leftJoin("description", "products.id", "=", "description.p_id")
-        ->select("products.*", "description.description")
+        ->leftJoin('subcategory','subcategory.id','=','products.subcat_id')
+        ->select("products.product_name","products.discount","products.price","products.cat_id","subcategory.sub_cat_name","products.id","products.subcat_id", "description.description")
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) >= ?', [$minPrice])
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) <= ?', [$maxPrice])
         ->where('products.cat_id', $catId)
