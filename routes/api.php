@@ -50,7 +50,7 @@ Route::get("/price-category",[ProductCategoryController::class,"PriceCategory"])
 Route::middleware('auth:sanctum')->post("/logout",[logoutHandlerController::class,"logout"])->name("logout");
 Route::middleware('auth:sanctum')->post("/logoutAll",[VerifyPageAcessController::class,"logoutAll"])->name("logoutAll");
 //API to get all the products List
-Route::get("/productListing",[productListingController::class,"ShowProducts"])->name("productShow");
+Route::get("/productListing/{cat?}/{subcat?}",[productListingController::class,"ShowProducts"])->name("productShow");
 // api to give subcategories based on category -> send {category} in request to get all types of subcategories related to that category}
 Route::post("/catSubCat",[ProductCategoryController::class,"categoryBasedSubcategory"])->name("subCategory");
 // Product after applying filters of {category, subcategory, maxPrice, minPrice} so you need to send these only subCategory can be sended or remained null

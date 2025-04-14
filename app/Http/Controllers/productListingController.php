@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class productListingController extends Controller
 {
     //
-    public function ShowProducts(Request $request)
+    public function ShowProducts($cat = null, $subcat = null)
     {
         $productCompleteDetails=Product::leftJoin("description","products.id","=","description.p_id")
         ->select("products.*","description.*")
@@ -22,6 +22,21 @@ class productListingController extends Controller
             }
             return $item;
         });
+       if($cat)
+       {
+        $productCompleteDetails = $productCompleteDetails->filter(function ($item) use ($cat) {
+            return $item->cat_id == $cat;
+        });
+       }
+       if($subcat)
+       {
+        $productCompleteDetails = $productCompleteDetails->filter(function ($item) use ($subcat) {
+            return $item->subcat_id == $subcat;
+        });
+       }
+       $productCompleteDetails = $productCompleteDetails->values();
+
+
         return response()->json(data: $productCompleteDetails);
     }
 
