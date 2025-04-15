@@ -101,6 +101,7 @@ $result = DB::table('order_details')
         'order_details.payment_status as payment',
         'order_details.productimage as image',
         'order_details.date as order_Date',
+        'order_details.quantity as quantity',
         'order_details.time as order_Time',
         'user.firstname as first_name',
         'user.lastname as last_name',
@@ -132,7 +133,7 @@ public function orderStatus(Request $request)
         // Get all tracking_status records for this order_id, ordered by creation time
         $statuses = DB::table('order_status')
             ->select('tracking_status')
-            ->where('order_id', $orderId)
+            ->where('order_id', '=',$orderId)
             ->orderBy('date', 'asc') // assuming you have a created_at column
             ->pluck('tracking_status')
             ->toArray();
@@ -145,5 +146,55 @@ public function orderStatus(Request $request)
     ]);
 }
 
+public function recentOrder(Request $request)
+{
+    $user = Auth::user();
+    
+    // First get all distinct order IDs for the user
+    $orderIds = DB::table('order_details')
+        ->select('order_id')
+        ->where('user_id', $user->id)
+        ->groupBy('order_id')
+        ->pluck('order_id');
+    
+    // Then get complete order details for each order ID
+    $orders = [];
+    
+    foreach ($orderIds as $orderId) {
+        $orderDetails = DB::table('order_details as od')
+            ->leftJoin('products as p', 'od.productid', '=', 'p.id')
+            ->leftJoin('description as d','p.id','=','d.p_id')
+            ->where('od.order_id', '=',$orderId)
+            ->select([
+                'od.*', // Select all columns from order_details
+                'p.product_name as product_name', // Assuming 'products' has 'name' column
+                'd.description as product_description' // Add other product fields if needed
+            ])
+            ->get()
+            ->map(function ($item) {
+                // Format the data as needed
+                return [
+                    'product_id' => $item->productid,
+                    'product_name' => $item->product_name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'shipping_charge' => $item->shipping_charge,
+                    'order_status' => $item->order_status,
+                    'payment_status' => $item->payment_status,
+                    'date' => $item->date,
+                    'time' => $item->time,
+                    'product_image' => $item->productimage,
+                    // Add any other fields you need
+                ];
+            });
+        
+        $orders[$orderId] = $orderDetails;
+    }
+    
+    return response()->json([
+        'status' => 'success',
+        'orders' => $orders
+    ]);
+}
 
 }

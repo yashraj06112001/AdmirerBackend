@@ -14,6 +14,7 @@ use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AddToCartController;
 use App\Http\Controllers\HomepageController;
+use Laravel\Sanctum\Sanctum;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +64,7 @@ Route::middleware('auth:sanctum')->get("/user-profile",[DashboardController::cla
 Route::middleware('auth:sanctum')->post('/updateProfile',[DashboardController::class,'profileUpdate'])->name('update_profile');
 //Order API
 Route::middleware('auth:sanctum')->get('/user-order-detail',[DashboardController::class,'AllOrderStatus'])->name("order-details");
+Route::middleware('auth:sanctum')->get('/recent-orders',[DashboardController::class,'recentOrder'])->name("recent-orders");
 Route::middleware('auth:sanctum')->get('/status-history',[DashboardController::class,'orderStatus'])->name('order-status');
 
 // get all product details and related product details 
