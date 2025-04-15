@@ -66,7 +66,7 @@ Route::middleware('auth:sanctum')->post('/updateProfile',[DashboardController::c
 Route::middleware('auth:sanctum')->get('/user-order-detail',[DashboardController::class,'AllOrderStatus'])->name("order-details");
 Route::middleware('auth:sanctum')->get('/recent-orders',[DashboardController::class,'recentOrder'])->name("recent-orders");
 Route::middleware('auth:sanctum')->get('/status-history',[DashboardController::class,'orderStatus'])->name('order-status');
-
+Route::post("/order-detail",[DashboardController::class,'orderDetail']);
 // get all product details and related product details 
 Route::get('/product-details/{id}', [ProductDetailsController::class, 'getProductDetails']);
 // add wishlist and remove wishlist

@@ -178,7 +178,6 @@ public function recentOrder(Request $request)
                     'product_name' => $item->product_name,
                     'price' => $item->price,
                     'quantity' => $item->quantity,
-                    'shipping_charge' => $item->shipping_charge,
                     'order_status' => $item->order_status,
                     'payment_status' => $item->payment_status,
                     'date' => $item->date,
@@ -193,7 +192,36 @@ public function recentOrder(Request $request)
     
     return response()->json([
         'status' => 'success',
-        'orders' => $orders
+        'orders' => $orders,
+    ]);
+}
+
+public function orderDetail(Request $request)
+{
+   $id=$request->id;
+   $result=DB::table('order_details as od')
+   ->leftJoin('products as p','od.productid','=','p.id')
+   ->leftJoin('description as des','p.id','=','des.p_id')
+   ->select('od.price','od.order_id','od.quantity','od.payment_type','od.date','od.time','p.product_name','des.description')
+   ->where('od.order_id','=',$id)
+   ->get();
+
+    // Clean up HTML and unwanted characters
+    $cleaned = $result->map(function ($item) {
+        $desc = strip_tags($item->description); // Remove HTML tags
+        $desc = html_entity_decode($desc); // Decode HTML entities like &nbsp;
+        $desc = preg_replace('/[\r\n]+/', ' ', $desc); // Remove newlines
+        $desc = trim($desc); // Clean start/end whitespace
+        $item->description = $desc;
+        return $item;
+    });
+    $trackingStatus = DB::table('order_status')
+    ->where('order_id', $id)
+    ->value('tracking_status'); // gets first value directly
+
+    return response()->json([
+        "data" => $cleaned,
+        "tracking_status"=>$trackingStatus
     ]);
 }
 
