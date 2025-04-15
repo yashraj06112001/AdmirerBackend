@@ -133,6 +133,7 @@ class ProductDetailsController extends Controller
                       $exists = DB::table('wishlist')
                           ->where('product_id', $prod->id)
                           ->where('user_id', $userId)
+                          ->where('status', 'Active')
                           ->exists();
                       $isWishlisted = $exists ? 1 : 0;
                   }

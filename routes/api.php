@@ -14,6 +14,7 @@ use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AddToCartController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\PlaceOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,3 +83,5 @@ Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistCont
 
 // Homepage banner img url
 Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
+//place order details 
+Route::middleware('auth:api')->post('/place-order', [PlaceOrderController::class, 'placeOrder']);
