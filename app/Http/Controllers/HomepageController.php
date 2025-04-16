@@ -38,7 +38,6 @@ class HomepageController extends Controller
                 ];
             });
 
-
             $category_subcategory = DB::table('category as c')
             ->select('c.id as cat_id', 'c.cat_name as title', 'c.cat_image as image')
             ->join('products as p', 'c.id', '=', 'p.cat_id')
@@ -64,7 +63,7 @@ class HomepageController extends Controller
                     ->where('sub.id', '!=', 10)
                     ->distinct()
                     ->get()
-                    ->map(function ($sub) {
+                    ->map(function ($sub) { 
                         $title = $sub->title;
                         $imageName = strtolower(str_replace(' ', '_', $title)); // slug banaya
                         $extensions = ['jpg', 'jpeg', 'png'];
