@@ -40,55 +40,62 @@ class HomepageController extends Controller
             });
 
             $category_subcategory = DB::table('category as c')
-            ->select('c.id as cat_id', 'c.cat_name as title', 'c.cat_image as image')
-            ->join('products as p', 'c.id', '=', 'p.cat_id')
-            ->where('c.status', 'Active')
-            ->distinct()
-            ->get()
-            ->flatMap(function ($cat) {
-                $catImageUrl = 'https://admirer.in/asset/image/category/' . $cat->image;
-                
-                // Add category entry
-                $items = [[
-                    'title' => $cat->title,
-                    'image' => $catImageUrl,
-                    'url'   => 'cat-' . $cat->cat_id
-                ]];
-        
-                // Add subcategories directly below the category (same level)
-                $subcategories = DB::table('subcategory as sub')
-                    ->select('sub.id as subcat_id', 'sub.sub_cat_name as title')
-                    ->join('products as p', 'sub.id', '=', 'p.subcat_id')
-                    ->where('sub.cat_id', $cat->cat_id)
-                    ->where('sub.status', 'Active')
-                    ->where('sub.id', '!=', 10)
-                    ->distinct()
-                    ->get()
-                    ->map(function ($sub) { 
-                        $title = $sub->title;
-                        $imageName = strtolower(str_replace(' ', '_', $title)); // slug banaya
-                        $extensions = ['jpg', 'jpeg', 'png'];
-                        $image = null;
+                ->select('c.id as cat_id', 'c.cat_name as title')
+                ->join('products as p', 'c.id', '=', 'p.cat_id')
+                ->where('c.status', 'Active')
+                ->distinct()
+                ->get()
+                ->flatMap(function ($cat) {
+                    $title = $cat->title;
+                    $imageName = strtolower(str_replace(' ', '_', $title)); // slug banaya
+                    $extensions = ['jpg', 'jpeg', 'png'];
+                    $image = null;
 
-                        foreach ($extensions as $ext) {
-                            $path = "https://admirer.in/asset/image/subcategory/{$imageName}.{$ext}";
-                            
-                            if ($path){
-                                $image = "https://admirer.in/asset/image/subcategory/{$imageName}.{$ext}";
+                    // Category image from subcategory folder
+                    foreach ($extensions as $ext) {
+                        $path = "https://admirer.in/asset/image/subcategory/{$imageName}.{$ext}";
+                        $image = $path;
+                        break;
+                    }
+
+                    // Add category entry
+                    $items = [[
+                        'title' => $cat->title,
+                        'image' => $image,
+                        'url'   => 'cat-' . $cat->cat_id
+                    ]];
+
+                    // Add subcategories directly below the category (same level)
+                    $subcategories = DB::table('subcategory as sub')
+                        ->select('sub.id as subcat_id', 'sub.sub_cat_name as title')
+                        ->join('products as p', 'sub.id', '=', 'p.subcat_id')
+                        ->where('sub.cat_id', $cat->cat_id)
+                        ->where('sub.status', 'Active')
+                        ->where('sub.id', '!=', 10)
+                        ->distinct()
+                        ->get()
+                        ->map(function ($sub) {
+                            $title = $sub->title;
+                            $imageName = strtolower(str_replace(' ', '_', $title));
+                            $extensions = ['jpg', 'jpeg', 'png'];
+                            $image = null;
+
+                            foreach ($extensions as $ext) {
+                                $path = "https://admirer.in/asset/image/subcategory/{$imageName}.{$ext}";
+                                $image = $path;
                                 break;
                             }
-                        }
 
-                        return [
-                            'title' => $title,
-                            'image' => $image, // ✅ agar file mil gayi to uska path
-                            'url'   => 'subcat-' . $sub->subcat_id
-                        ];
-                    });
+                            return [
+                                'title' => $title,
+                                'image' => $image,
+                                'url'   => 'subcat-' . $sub->subcat_id
+                            ];
+                        });
 
-        
-                return collect($items)->merge($subcategories);
-            })->values();        
+                    return collect($items)->merge($subcategories);
+                })->values();
+       
 
         $offer_basePath = 'https://admirer.in/asset/image/offer';
 
