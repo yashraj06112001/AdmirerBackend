@@ -87,4 +87,4 @@ Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistCont
 Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
 
 //USER DETAIL
-Route::middleware('auth:sanctum')->get('/getAddress',[userApiController::class,'getAddress'])->name('getAddress');
+Route::post('/getAddress',[userApiController::class,'getAddress'])->name('getAddress');
