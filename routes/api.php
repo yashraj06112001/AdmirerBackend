@@ -16,6 +16,7 @@ use App\Http\Controllers\AddToCartController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\userApiController;
 use Laravel\Sanctum\Sanctum;
+use App\Http\Controllers\PlaceOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,3 +89,5 @@ Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
 
 //USER DETAIL
 Route::post('/getAddress',[userApiController::class,'getAddress'])->name('getAddress');
+//place order details 
+Route::middleware('auth:sanctum')->post('/place-order', [PlaceOrderController::class, 'placeOrder']);

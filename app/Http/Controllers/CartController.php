@@ -135,7 +135,7 @@ class CartController extends Controller
             'message' => 'Cart Fetched Successfully!',
             'data'    => [
                 'products' => $products,
-                'totals'   => $totals,
+                'order_summary'   => $totals,
                 'user_addresses'  => $userAddresses
             ]
         ], 200);

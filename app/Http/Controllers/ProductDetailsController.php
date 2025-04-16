@@ -44,16 +44,18 @@ class ProductDetailsController extends Controller
             }
         }
 
-        // Now userId is available if logged in
         $isWishlisted = 0;
+            if ($userId) {
+                $wishlist = DB::table('wishlist')
+                            ->where('product_id', $id)
+                            ->where('user_id', $userId)
+                            ->select('status')
+                            ->first();
 
-        if ($userId) {
-            $exists = DB::table('wishlist')
-                ->where('product_id', $id) // or $product->product_code if needed
-                ->where('user_id', $userId)
-                ->exists();
-            $isWishlisted = $exists ? 1 : 0;
-        }
+                if ($wishlist) {
+                    $isWishlisted = ($wishlist->status == 'Active') ? 1 : 0;
+                }
+            }
 
         $isInCart = 0;
 
@@ -129,13 +131,17 @@ class ProductDetailsController extends Controller
   
                   // Wishlist check
                   $isWishlisted = 0;
-                  if ($userId) {
-                      $exists = DB::table('wishlist')
-                          ->where('product_id', $prod->id)
-                          ->where('user_id', $userId)
-                          ->exists();
-                      $isWishlisted = $exists ? 1 : 0;
-                  }
+                    if ($userId) {
+                        $wishlist = DB::table('wishlist')
+                                    ->where('product_id', $prod->id)
+                                    ->where('user_id', $userId)
+                                    ->select('status')
+                                    ->first();
+
+                        if ($wishlist) {
+                            $isWishlisted = ($wishlist->status == 'Active') ? 1 : 0;
+                        }
+                    }
   
                   return [
                       'id' => $prod->id,
