@@ -14,6 +14,7 @@ use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AddToCartController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\userApiController;
 use Laravel\Sanctum\Sanctum;
 
 /*
@@ -84,3 +85,6 @@ Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistCont
 
 // Homepage banner img url
 Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
+
+//USER DETAIL
+Route::middleware('auth:sanctum')->get('/getAddress',[userApiController::class,'getAddress'])->name('getAddress');
