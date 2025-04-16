@@ -84,4 +84,4 @@ Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistCont
 // Homepage banner img url
 Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
 //place order details 
-Route::middleware('auth:api')->post('/place-order', [PlaceOrderController::class, 'placeOrder']);
+Route::middleware('auth:sanctum')->post('/place-order', [PlaceOrderController::class, 'placeOrder']);
