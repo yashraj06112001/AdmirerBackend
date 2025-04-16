@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class productListingController extends Controller
 {
     //
-    public function ShowProducts(Request $request)
+    public function ShowProducts($cat = null, $subcat = null)
     {
         $productCompleteDetails=Product::leftJoin("description","products.id","=","description.p_id")
         ->select("products.*","description.*")
@@ -22,6 +22,21 @@ class productListingController extends Controller
             }
             return $item;
         });
+       if($cat)
+       {
+        $productCompleteDetails = $productCompleteDetails->filter(function ($item) use ($cat) {
+            return $item->cat_id == $cat;
+        });
+       }
+       if($subcat)
+       {
+        $productCompleteDetails = $productCompleteDetails->filter(function ($item) use ($subcat) {
+            return $item->subcat_id == $subcat;
+        });
+       }
+       $productCompleteDetails = $productCompleteDetails->values();
+
+
         return response()->json(data: $productCompleteDetails);
     }
 
@@ -34,7 +49,7 @@ class productListingController extends Controller
         
         // Get Category ID
         $catId = DB::table('category')
-            ->where("cat_name", $category)
+            ->where("id", $category)
             ->where('status', 'Active')
             ->value('id'); // use value() for single value
         
@@ -42,7 +57,7 @@ class productListingController extends Controller
         $subCatId = null;
         if ($subCategory) {
             $subCatId = DB::table("subcategory")
-                ->where('sub_cat_name', $subCategory)
+                ->where('id', $subCategory)
                 ->where('status', 'Active')
                 ->value('id'); // use value() instead of get()
         }
@@ -53,7 +68,7 @@ class productListingController extends Controller
         ->select("products.product_name","products.discount","products.price","products.cat_id","subcategory.sub_cat_name","products.id","products.subcat_id", "description.description")
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) >= ?', [$minPrice])
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) <= ?', [$maxPrice])
-        ->where('products.cat_id', $catId)
+        ->where('products.cat_id', '=',$catId)
         ->where('products.status','Active');
         
         // Conditionally add subcategory filter

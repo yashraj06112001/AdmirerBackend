@@ -14,6 +14,8 @@ use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AddToCartController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\userApiController;
+use Laravel\Sanctum\Sanctum;
 use App\Http\Controllers\PlaceOrderController;
 
 /*
@@ -51,7 +53,7 @@ Route::get("/price-category",[ProductCategoryController::class,"PriceCategory"])
 Route::middleware('auth:sanctum')->post("/logout",[logoutHandlerController::class,"logout"])->name("logout");
 Route::middleware('auth:sanctum')->post("/logoutAll",[VerifyPageAcessController::class,"logoutAll"])->name("logoutAll");
 //API to get all the products List
-Route::get("/productListing",[productListingController::class,"ShowProducts"])->name("productShow");
+Route::get("/productListing/{cat?}/{subcat?}",[productListingController::class,"ShowProducts"])->name("productShow");
 // api to give subcategories based on category -> send {category} in request to get all types of subcategories related to that category}
 Route::post("/catSubCat",[ProductCategoryController::class,"categoryBasedSubcategory"])->name("subCategory");
 // Product after applying filters of {category, subcategory, maxPrice, minPrice} so you need to send these only subCategory can be sended or remained null
@@ -64,8 +66,9 @@ Route::middleware('auth:sanctum')->get("/user-profile",[DashboardController::cla
 Route::middleware('auth:sanctum')->post('/updateProfile',[DashboardController::class,'profileUpdate'])->name('update_profile');
 //Order API
 Route::middleware('auth:sanctum')->get('/user-order-detail',[DashboardController::class,'AllOrderStatus'])->name("order-details");
+Route::middleware('auth:sanctum')->get('/recent-orders',[DashboardController::class,'recentOrder'])->name("recent-orders");
 Route::middleware('auth:sanctum')->get('/status-history',[DashboardController::class,'orderStatus'])->name('order-status');
-
+Route::post("/order-detail",[DashboardController::class,'orderDetail']);
 // get all product details and related product details 
 Route::get('/product-details/{id}', [ProductDetailsController::class, 'getProductDetails']);
 // add wishlist and remove wishlist
@@ -83,5 +86,8 @@ Route::middleware('auth:sanctum')->post('/user/wishlist/movecart', [WishlistCont
 
 // Homepage banner img url
 Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
+
+//USER DETAIL
+Route::post('/getAddress',[userApiController::class,'getAddress'])->name('getAddress');
 //place order details 
 Route::middleware('auth:sanctum')->post('/place-order', [PlaceOrderController::class, 'placeOrder']);

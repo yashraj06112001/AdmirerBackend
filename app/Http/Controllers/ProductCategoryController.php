@@ -60,18 +60,18 @@ class ProductCategoryController extends Controller
 
     public function categoryBasedSubcategory(Request $request)
     {
-        $categoryName = $request->input('category');
+        $categoryID = $request->input('category');
 
         // Fetch the category by name and status active
         $category = DB::table('category')
-            ->where('cat_name', $categoryName)
+            ->where('id', '=',$categoryID)
             ->where('status', 'Active')
             ->first();
     
         if (!$category) {
             return response()->json([
                 'error' => 'Category not found or inactive',
-                'category name'=>$categoryName,
+                'category id'=>$categoryID,
                 'request'=>$request
             ], 404);
         }

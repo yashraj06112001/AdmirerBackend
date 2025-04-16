@@ -95,15 +95,16 @@ $result = DB::table('order_details')
     })
     ->leftJoin('user', 'user.id', '=', 'order_details.user_id') // use 'users' if your table is plural
     ->select(
-        'order_details.productname as Product name',
-        'order_details.price as Product Price',
-        'order_details.order_id as order ID',
-        'order_details.payment_status as Payment',
+        'order_details.productname as product_name',
+        'order_details.price as product_price',
+        'order_details.order_id as order_id',
+        'order_details.payment_status as payment',
         'order_details.productimage as image',
-        'order_details.date as Order Date',
-        'order_details.time as Order Time',
-        'user.firstname as first name',
-        'user.lastname as last name',
+        'order_details.date as order_Date',
+        'order_details.quantity as quantity',
+        'order_details.time as order_Time',
+        'user.firstname as first_name',
+        'user.lastname as last_name',
     )
     ->where('order_details.user_id', '=', $id)
     ->orderBy('order_details.date', 'desc')
@@ -132,7 +133,7 @@ public function orderStatus(Request $request)
         // Get all tracking_status records for this order_id, ordered by creation time
         $statuses = DB::table('order_status')
             ->select('tracking_status')
-            ->where('order_id', $orderId)
+            ->where('order_id', '=',$orderId)
             ->orderBy('date', 'asc') // assuming you have a created_at column
             ->pluck('tracking_status')
             ->toArray();
@@ -145,5 +146,83 @@ public function orderStatus(Request $request)
     ]);
 }
 
+public function recentOrder(Request $request)
+{
+    $user = Auth::user();
+    
+    // First get all distinct order IDs for the user
+    $orderIds = DB::table('order_details')
+        ->select('order_id')
+        ->where('user_id', $user->id)
+        ->groupBy('order_id')
+        ->pluck('order_id');
+    
+    // Then get complete order details for each order ID
+    $orders = [];
+    
+    foreach ($orderIds as $orderId) {
+        $orderDetails = DB::table('order_details as od')
+            ->leftJoin('products as p', 'od.productid', '=', 'p.id')
+            ->leftJoin('description as d','p.id','=','d.p_id')
+            ->where('od.order_id', '=',$orderId)
+            ->select([
+                'od.*', // Select all columns from order_details
+                'p.product_name as product_name', // Assuming 'products' has 'name' column
+                'd.description as product_description' // Add other product fields if needed
+            ])
+            ->get()
+            ->map(function ($item) {
+                // Format the data as needed
+                return [
+                    'product_id' => $item->productid,
+                    'product_name' => $item->product_name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'order_status' => $item->order_status,
+                    'payment_status' => $item->payment_status,
+                    'date' => $item->date,
+                    'time' => $item->time,
+                    'product_image' => $item->productimage,
+                    // Add any other fields you need
+                ];
+            });
+        
+        $orders[$orderId] = $orderDetails;
+    }
+    
+    return response()->json([
+        'status' => 'success',
+        'orders' => $orders,
+    ]);
+}
+
+public function orderDetail(Request $request)
+{
+   $id=$request->id;
+   $result=DB::table('order_details as od')
+   ->leftJoin('products as p','od.productid','=','p.id')
+   ->leftJoin('description as des','p.id','=','des.p_id')
+   ->select('od.price','od.order_id','od.quantity','od.payment_type','od.date','od.time','p.product_name','des.description')
+   ->where('od.order_id','=',$id)
+   ->get();
+
+    // Clean up HTML and unwanted characters
+    $cleaned = $result->map(function ($item) {
+        $desc = strip_tags($item->description); // Remove HTML tags
+        $desc = html_entity_decode($desc); // Decode HTML entities like &nbsp;
+        $desc = preg_replace('/[\r\n]+/', ' ', $desc); // Remove newlines
+        $desc = trim($desc); // Clean start/end whitespace
+        $item->description = $desc;
+        return $item;
+    });
+    $trackingStatus = DB::table('order_status')
+    ->where('order_id', $id)
+    ->value('tracking_status'); // gets first value directly
+
+    return response()->json([
+        "data" => $cleaned,
+        "tracking_status"=>$trackingStatus
+    ]);
+}
 
 }

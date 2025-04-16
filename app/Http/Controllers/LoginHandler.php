@@ -22,7 +22,7 @@ class LoginHandler extends Controller
 
     if ($existingUser) {
         if ($mobileNumberVerified) {
-            $token = $existingUser->createToken('api-token', ['*'], now()->addMinutes(60))->plainTextToken;
+            $token = $existingUser->createToken('api-token', ['*'], now()->addMinutes(300))->plainTextToken;
 
             return response()->json([
                 'token' => $token,
