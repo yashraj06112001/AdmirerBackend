@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 // API to signUp the user
-Route::post("/signUp",[signUp::class,"signUpHandler"])->name("signUp");
+Route::middleware('auth:sanctum')->post("/signUp",[signUp::class,"signUpHandler"])->name("signUp");
 //API to logged in the user
 Route::post("/Login",[LoginHandler::class,'loginHandling'])->name("Login");
 //API to verify user logged in or not
