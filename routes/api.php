@@ -75,6 +75,11 @@ Route::get('/product-details/{id}', [ProductDetailsController::class, 'getProduc
 Route::post('/wishlist/toggle', [WishlistController::class, 'toggleWishlist']);
 // add to cart and remove cart
 Route::post('/add-to-cart', [AddToCartController::class, 'addToCart']);
+
+
+
+// this API is used to get addresses from the user at cart-checkout-page
+Route::middleware('auth:sanctum')->get('/get-address',action:[CartController::class,'getCartAddress'])->name('getcartAddress');
 // buy now 
 Route::post('/buy-now', [AddToCartController::class, 'buyNow']);
 // get user all wishlist

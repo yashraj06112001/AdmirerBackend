@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class signUp extends Controller
 {
      public function signUpHandler(Request $request)
-    {
+    {   $user=Auth::user();
         $id = Auth::user()->id;
 
 // Step 1: Validate incoming request
@@ -79,7 +79,25 @@ if ($addressFlat) {
         ]);
 } else {
     // Step 7: Update user's address directly
-    DB::table('user')
+    $firstname=$user->firstname;
+    $lastname=$user->lastname;
+    if(!$firstname && !$lastname)
+    {
+        DB::table('user')
+        ->where('id', $id)
+        ->update([
+            'fistname'=>$validated['firstname'],
+            'lastname'=>$validated['lastname'],
+            'flat'     => $validated['flat'],
+            'street'   => $validated['street'],
+            'locality' => $validated['locality'],
+            'city'     => $validated['city'],
+            'zipcode'  => $validated['pincode'],
+            'state'    => $stateId,
+        ]); 
+    }
+    else{
+        DB::table('user')
         ->where('id', $id)
         ->update([
             'flat'     => $validated['flat'],
@@ -89,6 +107,8 @@ if ($addressFlat) {
             'zipcode'  => $validated['pincode'],
             'state'    => $stateId,
         ]);
+    }
+  
 }
 
 return response()->json(['message' => 'Address updated successfully.',
