@@ -202,7 +202,12 @@ class CartController extends Controller
     }
 
 
-    
+    public function getCartAddress(Request $request)
+    {
+       $user=Auth::user()->id;
+       $name=$user->firstname + $user->lastname;
+       $flat=DB::table('');
+    }
 
 
 }
