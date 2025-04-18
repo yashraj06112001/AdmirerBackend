@@ -15,6 +15,7 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AddToCartController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\userApiController;
+use App\Http\Controllers\LoginSmsController;
 use Laravel\Sanctum\Sanctum;
 use App\Http\Controllers\PlaceOrderController;
 
@@ -96,3 +97,6 @@ Route::get('/homepage-data', [HomepageController::class, 'getHomepageData']);
 Route::post('/getAddress',[userApiController::class,'getAddress'])->name('getAddress');
 //place order details 
 Route::middleware('auth:sanctum')->post('/place-order', [PlaceOrderController::class, 'placeOrder']);
+// SMS API'S FOR LOGIN AND VERIFICATION
+Route::post('/send-otp', [LoginSmsController::class, 'sendOtp']);
+Route::post('/verify-otp', [LoginSmsController::class, 'verifyOtp']);
