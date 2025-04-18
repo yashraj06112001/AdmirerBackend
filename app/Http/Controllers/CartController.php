@@ -204,9 +204,33 @@ class CartController extends Controller
 
     public function getCartAddress(Request $request)
     {
-       $user=Auth::user()->id;
-       $name=$user->firstname + $user->lastname;
-       $flat=DB::table('');
+       $user=Auth::user();
+       // user will have certain shipping Addresses send it to the final frontend
+       $id=$user->id;
+       $shippingAddresses=DB::table('user_shipping_addresses as ship')
+       ->leftJoin('state_list','ship.state','=','state_list.id')
+       ->select('ship.first_name','ship.last_name','ship.flat','ship.street'
+       ,'ship.locality','ship.city','ship.zip_code','ship.email'
+       ,'state_list.state','ship.addr_type')
+       ->where('ship.user_id','=',$id)
+       ->get();
+       // with this we got the shipping Addresses Hoooreey!!!!!!!!!!
+       //Now lets find the billing Address of the User
+
+       $billingAddress=DB::table('user as u')
+       ->leftJoin('state_list as s','s.id','=','u.state')
+       ->select('u.firstname','u.lastname','u.flat','u.street','u.locality','u.city','u.zipcode','u.addr_type',
+       's.state',)
+       ->where('u.id','=',$id)
+       ->get();
+       // Through this we already have the billing address as well, Hooreeyyy !!!
+
+       // Now lets pass all the data as a JSON
+       return response()->json([
+        "shipping_address"=>$shippingAddresses,
+        "billing_address"=>$billingAddress
+       ]);
+
     }
 
 
