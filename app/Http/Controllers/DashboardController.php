@@ -64,7 +64,7 @@ class DashboardController extends Controller
             'zipcode'       => $request->zipcode ?? Auth::user()->zipcode,
             'state'         => $request->state ?? Auth::user()->state,
             'country'       => $request->country ?? Auth::user()->country,
-            'address_type'  => $request->address_type ?? Auth::user()->address_type,
+            'addr_type'  => $request->address_type ?? Auth::user()->addr_type,
         ];
     
         // Perform the update using Query Builder
