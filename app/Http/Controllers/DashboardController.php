@@ -64,7 +64,7 @@ class DashboardController extends Controller
             'locality'      => $request->locality ?? Auth::user()->locality,
             'city'          => $request->city ?? Auth::user()->city,
             'zipcode'       => $request->zipcode ?? Auth::user()->zipcode,
-            'state'         => $state ?? Auth::user()->state,
+            'state'         => $state->id ?? Auth::user()->state,
             'country'       => $request->country ?? Auth::user()->country,
             'addr_type'  => $request->address_type ?? Auth::user()->addr_type,
         ];
