@@ -50,6 +50,8 @@ class DashboardController extends Controller
         if (!$userId) {
             return response()->json(['error' => 'User not authenticated'], 401);
         }
+
+        $state=DB::table('state_list')->select('state_list.id')->where('state_list.state','=',$request->state)->first();
     
         // Define the update data (fallback to existing values if not provided)
         $updateData = [
@@ -62,7 +64,7 @@ class DashboardController extends Controller
             'locality'      => $request->locality ?? Auth::user()->locality,
             'city'          => $request->city ?? Auth::user()->city,
             'zipcode'       => $request->zipcode ?? Auth::user()->zipcode,
-            'state'         => $request->state ?? Auth::user()->state,
+            'state'         => $state ?? Auth::user()->state,
             'country'       => $request->country ?? Auth::user()->country,
             'addr_type'  => $request->address_type ?? Auth::user()->addr_type,
         ];
