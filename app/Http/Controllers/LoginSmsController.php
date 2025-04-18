@@ -46,7 +46,8 @@ class LoginSmsController extends Controller
             // Find or create user
             $user = User::firstOrCreate(['mobile' => $request->phone],
             [                             
-                'mobile' => $request->phone
+                'mobile' => $request->phone,
+                'mobileverified'=>"Yes"
             ]
             );
             
