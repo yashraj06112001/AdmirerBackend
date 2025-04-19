@@ -59,6 +59,7 @@ Route::get("/productListing/{cat?}/{subcat?}",[productListingController::class,"
 Route::post("/catSubCat",[ProductCategoryController::class,"categoryBasedSubcategory"])->name("subCategory");
 // Product after applying filters of {category, subcategory, maxPrice, minPrice} so you need to send these only subCategory can be sended or remained null
 Route::post('/productFilteredList',[productListingController::class,'productAfterFilterListing'])->name("filteredProduct");
+Route::post('/getSubCatName',[productListingController::class,'getSubcatName'])->name('getSubCatName');
 //.................................................Dashboard API............................................................................
 
 

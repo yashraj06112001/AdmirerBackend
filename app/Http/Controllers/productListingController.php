@@ -57,7 +57,7 @@ class productListingController extends Controller
         $subCatId = null;
         if ($subCategory) {
             $subCatId = DB::table("subcategory")
-                ->where('id', $subCategory)
+                ->where('id', '=',$subCategory)
                 ->where('status', 'Active')
                 ->value('id'); // use value() instead of get()
         }
@@ -87,5 +87,19 @@ class productListingController extends Controller
         });
         
         return response()->json($productCompleteDetails);
+    }
+
+
+    public function getSubcatName(Request $request)
+    {
+        $subcatId=$request->subcatId;
+        $catId=DB::table('subcategory')
+        ->where('subcategory.id','=',$subcatId)
+        ->value('subcategory.cat_id',);
+        $subcatName=DB::table('subcategory')
+        ->where('subcategory.id','=',$subcatId)
+        ->value('subcategory.sub_cat_name',);
+        return response()->json(['subcatName' => $subcatName,
+    "catId"=>$catId]);
     }
 }
