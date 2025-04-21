@@ -126,7 +126,6 @@ class placeOrderFlowController extends Controller
             $orderItems[] = [
                 'name' => $product->product_name,
                 'qty' => $product->quantity,
-                'price' => $product->price,
                 'sku' => $product->sku,
             ];
         }
