@@ -79,6 +79,7 @@ class placeOrderFlowController extends Controller
            'date'=>now()->toDateString(),
            'time'=>now()->toTimeString(),
            'gst' => $gst,
+           'payment_mode'=>$paymentType
            ]);
            $stateId = DB::table('state_list')
           ->where('state', $state)
