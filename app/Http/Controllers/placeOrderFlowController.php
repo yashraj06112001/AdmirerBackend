@@ -129,21 +129,10 @@ class placeOrderFlowController extends Controller
             ];
         }
     
-        $shippingCharges = 40; // Adjust as needed
-        $discount = 100;
-        $codCharges = ($paymentType === 'cod') ? 30 : 0;
-    
         $payload = [
             'order_number' => $orderID,
-            'shipping_charges' => $shippingCharges,
-            'discount' => $discount,
-            'cod_charges' => $codCharges,
             'payment_type' => $paymentType,
             'order_amount' => $amount,
-            'package_weight' => 300,
-            'package_length' => 10,
-            'package_breadth' => 10,
-            'package_height' => 10,
             'consignee' => $consignee,
             'pickup' => $pickup,
             'order_items' => $orderItems,
