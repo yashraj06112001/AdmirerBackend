@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\AddCart;
-
+use Illuminate\Support\Facades\Redis;
 
 class CartController extends Controller
 {
@@ -232,6 +232,30 @@ class CartController extends Controller
        ]);
 
     }
+   
+    public function updateCartProductQuantity(Request $request)
+    {   
 
+        $userId = Auth::user()->id;
+    $product_id = $request->productId;
+    $currentQuantity = $request->quantity;
+
+    $updated = DB::table('add_cart as ac')
+        ->where('ac.user_id', '=', $userId)
+        ->where('ac.pid', '=', $product_id)
+        ->update([
+            'quantity' => $currentQuantity
+        ]);
+
+    if ($updated) {
+        return response()->json([
+            'message' => "Product ID $product_id quantity updated to $currentQuantity in cart."
+        ]);
+    } else {
+        return response()->json([
+            'message' => "No cart entry found for product ID $product_id.",
+        ], 404);
+    }
+    }
 
 }
