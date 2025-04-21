@@ -13,6 +13,7 @@ use App\Http\Controllers\productListingController;
 use App\Http\Controllers\ProductDetailsController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AddToCartController;
+use App\Http\Controllers\changePhoneNumberThroughDashboardController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\userApiController;
 use App\Http\Controllers\LoginSmsController;
@@ -101,3 +102,9 @@ Route::middleware('auth:sanctum')->post('/place-order', [PlaceOrderController::c
 // SMS API'S FOR LOGIN AND VERIFICATION
 Route::post('/send-otp', [LoginSmsController::class, 'sendOtp']);
 Route::post('/verify-otp', [LoginSmsController::class, 'verifyOtp']);
+
+
+
+// PhoneNumber Update API's
+Route::middleware('auth:sanctum')->post('/changeNumberSendOtp',[changePhoneNumberThroughDashboardController::class,'sendOtp'])->name('chnageNumberOtpSend');
+Route::middleware('auth:sanctum')->post('/changeNumberOtpVerify',[changePhoneNumberThroughDashboardController::class,'verify'])->name('changeNumberOtpVerification');
