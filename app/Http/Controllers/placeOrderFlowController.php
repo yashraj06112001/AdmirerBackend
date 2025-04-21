@@ -147,7 +147,15 @@ class placeOrderFlowController extends Controller
         // Handle response
         if ($response->successful()) {
             // Success handling
-            logger()->info('NimbusPost API Success:', $response->json());
+            $responseBody = $response->body(); // Get the raw response body
+$responseData = $response->json();
+logger()->info('NimbusPost API Success:', $response->json());
+return response()->json([
+    'status_code' => $response->status(),
+    'raw_response' => $responseBody,
+    'parsed_response' => $responseData
+]);
+           
         } else {
             // Error handling
             logger()->error('NimbusPost API Error:', $response->json());
