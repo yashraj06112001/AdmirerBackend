@@ -19,6 +19,7 @@ use App\Http\Controllers\userApiController;
 use App\Http\Controllers\LoginSmsController;
 use Laravel\Sanctum\Sanctum;
 use App\Http\Controllers\PlaceOrderController;
+use App\Http\Controllers\placeOrderFlowController;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,3 +111,8 @@ Route::post('/verify-otp', [LoginSmsController::class, 'verifyOtp']);
 // PhoneNumber Update API's
 Route::middleware('auth:sanctum')->post('/changeNumberSendOtp',[changePhoneNumberThroughDashboardController::class,'sendOtp'])->name('chnageNumberOtpSend');
 Route::middleware('auth:sanctum')->post('/changeNumberOtpVerify',[changePhoneNumberThroughDashboardController::class,'verify'])->name('changeNumberOtpVerification');
+
+//...........................................   Nimbus Deleivery Api.................................................................//
+//Nimbus post to initiate delievery
+
+Route::middleware('auth:sanctum')->post('/NimbusShippingStart',[placeOrderFlowController::class,'createOrder'])->name('nimbus-shipping-start');
