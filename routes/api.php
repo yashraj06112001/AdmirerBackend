@@ -48,6 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cart/update-check', [CartController::class, 'updateCartCheckStatus']);
 });
 
+//API to update cart Quantity
+Route::middleware('auth:sanctum')->post('/update-cart-quantity',[CartController::class,'updateCartProductQuantity'])->name('update-cart-quantity');
 //API to get all product-category and sub-category
 Route::get("/product-category",[ProductCategoryController::class,"categorySubcategary"])->name("category");
 //API to get price-category range
