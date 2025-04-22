@@ -38,7 +38,8 @@ class placeOrderFlowController extends Controller
     $locality=$request->locality;
     $state=$request->state;
     $city=$request->city;
-    $orderID=$request->orderID;
+    $orderID= $request->get('orderID');
+
     $country=99;
     $paymentType=$request->paymentType;
     $products=$this->getProductsOfOrderId($id);
