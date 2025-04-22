@@ -71,7 +71,8 @@ class placeOrderFlowController extends Controller
     $locality=$request->locality;
     $state=$request->state;
     $city=$request->city;
-    $orderID=$request->orderID;
+    $orderID= $request->get('orderID');
+
     $country=99;
     $paymentType=$request->paymentType;
     $products=$this->getProductsOfOrderId($id);
@@ -111,6 +112,8 @@ class placeOrderFlowController extends Controller
            'order_id'=>$orderID,
            'date'=>now()->toDateString(),
            'time'=>now()->toTimeString(),
+           'gst' => $gst,
+           'payment_mode'=>$paymentType
            ]);
            $stateId = DB::table('state_list')
           ->where('state', $state)
