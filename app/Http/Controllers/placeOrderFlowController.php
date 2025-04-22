@@ -170,11 +170,16 @@ class placeOrderFlowController extends Controller
             'consignee' => $consignee,
             'pickup' => $pickup,
             'order_items' => $orderItems,
+            'request_auto_pickup' => 'yes',
+            'is_insurance' => '0', // Default no insurance
+            'tags' => 'online_order' // Default tag
         ];
         $token = $this->getNimbusToken();
 if (!$token) {
     throw new \Exception('Failed to authenticate with NimbusPost');
 }
+Log::debug('NimbusPost Request Payload:', $payload);
+Log::debug('NimbusPost Auth Token:', [$token]);
         // Send API request
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
