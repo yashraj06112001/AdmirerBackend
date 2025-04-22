@@ -5,11 +5,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 
 class placeOrderFlowController extends Controller
 {
     // here we will handle all the functions for placing order after candidate place his order
-
+    private $nimbusToken = null;
+    private $tokenExpiryTime = null;
+    const NIMBUS_TOKEN_EXPIRY = 3600; // Token expiry in seconds (1 hour)
     public function getProductsOfOrderId($userId)
     {
        $products=DB::table('add_cart as ac')
@@ -27,6 +31,35 @@ class placeOrderFlowController extends Controller
         $gst = $number * 0.18;
         return $gst;
     }
+    protected function getNimbusToken()
+{
+    if ($this->nimbusToken && time() < $this->tokenExpiryTime) {
+        return $this->nimbusToken;
+    }
+    
+    try {
+        $response = Http::post("https://api.nimbuspost.com/v1/users/login", [
+            'email' => env('NIMBUSPOST_EMAIL'),
+            'password' => env('NIMBUSPOST_PASSWORD')
+        ]);
+        
+        if ($response->successful()) {
+            $data = $response->json();
+            if ($data['status'] && !empty($data['data'])) {
+                $this->nimbusToken = $data['data'];
+                $this->tokenExpiryTime = time() + self::NIMBUS_TOKEN_EXPIRY;
+                return $this->nimbusToken;
+            }
+        }
+        
+        Log::error('Failed to get NimbusPost token', ['response' => $response->body()]);
+        return null;
+        
+    } catch (\Exception $e) {
+        Log::error('NimbusPost token request exception', ['error' => $e->getMessage()]);
+        return null;
+    }
+}
     public function createOrder(Request $request)
     {
     $id=Auth::user()->id;
@@ -124,8 +157,6 @@ class placeOrderFlowController extends Controller
             $orderItems[] = [
                 'name' => $product->product_name,
                 'qty' => $product->quantity,
-                'price' => $product->price,
-                'sku' => $product->sku,
             ];
         }
     
@@ -137,19 +168,29 @@ class placeOrderFlowController extends Controller
             'pickup' => $pickup,
             'order_items' => $orderItems,
         ];
-        $nimbusApiKey=env('NIMBUSPOST_API_KEY');
+        $token = $this->getNimbusToken();
+if (!$token) {
+    throw new \Exception('Failed to authenticate with NimbusPost');
+}
         // Send API request
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $nimbusApiKey,
+           'Authorization' => 'Bearer ' . $token,
         ])->post('https://api.nimbuspost.com/v1/shipments', $payload);
     
         // Handle response
         if ($response->successful()) {
             // Success handling
+            Log::info('NimbusPost API Success:', $response->json());
             logger()->info('NimbusPost API Success:', $response->json());
         } else {
             // Error handling
+            Log::error('NimbusPost API Error:', [
+                'status_code' => $response->status(),
+                'response' => $response->json(),
+                'order_id' => $orderID,
+                'user_id' => $id
+            ]);
             logger()->error('NimbusPost API Error:', $response->json());
         }
        }
