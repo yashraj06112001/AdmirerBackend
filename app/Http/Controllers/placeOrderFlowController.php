@@ -145,14 +145,14 @@ class placeOrderFlowController extends Controller
         ];
     
         $pickup = [
-            'warehouse_name' => config('nimbuspost.pickup.warehouse_name'),
-            'name' => config('nimbuspost.pickup.name'),
-            'address' => config('nimbuspost.pickup.address'),
-            'address_2' => config('nimbuspost.pickup.address_2'),
-            'city' => config('nimbuspost.pickup.city'),
-            'state' => config('nimbuspost.pickup.state'),
-            'pincode' => config('nimbuspost.pickup.pincode'),
-            'phone' => config('nimbuspost.pickup.phone'),
+            'warehouse_name' => config('nimbusDelievery.pickup.warehouse_name'),
+            'name' => config('nimbusDelievery.pickup.name'),
+            'address' => config('nimbusDelievery.pickup.address'),
+            'address_2' => config('nimbusDelievery.pickup.address_2'),
+            'city' => config('nimbusDelievery.pickup.city'),
+            'state' => config('nimbusDelievery.pickup.state'),
+            'pincode' => config('nimbusDelievery.pickup.pincode'),
+            'phone' => config('nimbusDelievery.pickup.phone'),
         ];
     
         $orderItems = [];
