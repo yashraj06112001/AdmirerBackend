@@ -49,8 +49,8 @@ class CartController extends Controller
                 'c.country_name',
                 'sl.state as state_name'
             )
-            ->where('sp.user_id', $userId)
-            ->where('sp.status', 'Active')
+            ->where('sp.user_id','=', $userId)
+            ->where('sp.status','=', 'Active')
             ->orderByDesc('sp.id')
             ->get();
     
