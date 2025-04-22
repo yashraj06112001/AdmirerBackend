@@ -141,7 +141,7 @@ class placeOrderFlowController extends Controller
         // Send API request
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $nimbusApiKey,
+           'NP-API-KEY' => $nimbusApiKey,
         ])->post('https://api.nimbuspost.com/v1/shipments', $payload);
     
         // Handle response
