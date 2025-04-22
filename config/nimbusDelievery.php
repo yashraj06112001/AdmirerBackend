@@ -1,7 +1,8 @@
 <?php
 
 return [
-
+    'email' => env('NIMBUSPOST_EMAIL'),
+    'password' => env('NIMBUSPOST_PASSWORD'),
     'pickup' => [
         'warehouse_name' => env('NIMBUSPOST_WAREHOUSE_NAME'),
         'name' => env('NIMBUSPOST_NAME'),

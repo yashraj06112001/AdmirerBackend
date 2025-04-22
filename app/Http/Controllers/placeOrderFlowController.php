@@ -39,8 +39,8 @@ class placeOrderFlowController extends Controller
     
     try {
         $response = Http::post("https://api.nimbuspost.com/v1/users/login", [
-            'email' => env('NIMBUSPOST_EMAIL'),
-            'password' => env('NIMBUSPOST_PASSWORD')
+            'email' => config('nimbusDelievery.email'),
+            'password' => config('nimbusDelievery.password')
         ]);
         
         if ($response->successful()) {
