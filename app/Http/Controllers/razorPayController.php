@@ -14,27 +14,43 @@ class razorPayController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        $razorpayKey=config('razorpay.razorpay_key_id');
-        $razorpaySecretKey=config('razorpay.razorpay_secret_key');
+        $razorpayKey = config('razorpay.razorpay_key_id');
+        $razorpaySecretKey = config('razorpay.razorpay_secret_key');
         $api = new Api($razorpayKey, $razorpaySecretKey);
-
+    
         if (!empty($input['razorpay_payment_id'])) {
             try {
+                // Step 1: Verify Signature
+                $attributes = [
+                    'razorpay_order_id'   => $input['razorpay_order_id'],
+                    'razorpay_payment_id' => $input['razorpay_payment_id'],
+                    'razorpay_signature'  => $input['razorpay_signature']
+                ];
+    
+                $api->utility->verifyPaymentSignature($attributes);
+    
+                // Step 2: Fetch the payment
                 $payment = $api->payment->fetch($input['razorpay_payment_id']);
-
-                // Capture the payment with the amount passed from frontend or use payment['amount']
-                $response = $payment->capture([
-                    'amount' => $input['amount'] ?? $payment['amount'] // fallback if not passed
-                ]);
-
-                Session::put('success', 'Payment successful');
+    
+                // Step 3: Check if already captured
+                if ($payment['status'] !== 'captured') {
+                    // Optionally verify amount before capturing
+                    $captureAmount = $payment['amount']; // safer to use backend value
+                    $payment->capture(['amount' => $captureAmount]);
+                }
+    
+                Session::put('success', 'Payment verified and successful.');
+                return redirect()->back();
+    
+            } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
+                Session::put('error', 'Payment signature verification failed.');
                 return redirect()->back();
             } catch (Exception $e) {
                 Session::put('error', $e->getMessage());
                 return redirect()->back();
             }
         }
-
+    
         Session::put('error', 'Invalid payment request');
         return redirect()->back();
     }
