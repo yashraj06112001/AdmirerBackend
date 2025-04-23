@@ -14,8 +14,9 @@ class razorPayController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $razorpayKey=config('razorpay.razorpay_key_id');
+        $razorpaySecretKey=config('razorpay.razorpay_secret_key');
+        $api = new Api($razorpayKey, $razorpaySecretKey);
 
         if (!empty($input['razorpay_payment_id'])) {
             try {
@@ -44,8 +45,9 @@ class razorPayController extends Controller
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1'
         ]);
-
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $razorpayKey=config('razorpay.razorpay_key_id');
+        $razorpaySecretKey=config('razorpay.razorpay_secret_key');
+        $api = new Api($razorpayKey,$razorpaySecretKey);
 
         $orderData = [
             'receipt'         => uniqid(),
