@@ -79,6 +79,7 @@ class placeOrderFlowController extends Controller
     $amount=$request->amount;
     $pincode=$request->pincode;
     $gst=$this->createGST($amount);
+    DB::beginTransaction();
     foreach($products as $product)
     {   
 
@@ -188,10 +189,12 @@ Log::debug('NimbusPost Auth Token:', [$token]);
     
         // Handle response
         if ($response->successful()) {
+            DB::commit();
             // Success handling
             Log::info('NimbusPost API Success:', $response->json());
             logger()->info('NimbusPost API Success:', $response->json());
         } else {
+            DB::rollBack();
             // Error handling
             Log::error('NimbusPost API Error:', [
                 'status_code' => $response->status(),
