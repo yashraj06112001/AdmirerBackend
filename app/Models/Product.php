@@ -1,13 +1,19 @@
 <?php
 
 namespace App\Models;
-
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
-{   
+{   use Searchable;
     protected $table = 'products'; 
-    
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'product_name' => $this->product_name,
+        ];
+    }
     public function cart()
     {
         return $this->hasOne(AddCart::class, 'pid', 'id')->where('status', 'Active');

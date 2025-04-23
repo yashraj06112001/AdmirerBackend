@@ -20,6 +20,7 @@ use App\Http\Controllers\LoginSmsController;
 use Laravel\Sanctum\Sanctum;
 use App\Http\Controllers\PlaceOrderController;
 use App\Http\Controllers\placeOrderFlowController;
+use App\Http\Controllers\searchApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,3 +117,6 @@ Route::middleware('auth:sanctum')->post('/changeNumberOtpVerify',[changePhoneNum
 //Nimbus post to initiate delievery
 
 Route::middleware('auth:sanctum')->post('/NimbusShippingStart',[placeOrderFlowController::class,'createOrder'])->name('nimbus-shipping-start');
+
+//..................................................Search API..............................................................//
+Route::get('/search', [searchApiController::class, 'search']);
