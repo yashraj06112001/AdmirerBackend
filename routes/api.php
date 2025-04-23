@@ -21,6 +21,7 @@ use Laravel\Sanctum\Sanctum;
 use App\Http\Controllers\PlaceOrderController;
 use App\Http\Controllers\placeOrderFlowController;
 use App\Http\Controllers\razorPayController;
+use App\Http\Controllers\searchApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,3 +124,7 @@ Route::middleware('auth:sanctum')->post('/NimbusShippingStart',[placeOrderFlowCo
 
 Route::middleware('auth:sanctum')->post('/razorPayStoreApi',[razorPayController::class,'store'])->name('razorpayStoreAPI');
 Route::middleware('auth:sanctum')->post('/razorPayCreateOrderApi',[razorPayController::class,'createOrder'])->name('razorpayStoreAPI');
+
+
+//..................................................Search API..............................................................//
+Route::get('/search', [searchApiController::class, 'search']);
