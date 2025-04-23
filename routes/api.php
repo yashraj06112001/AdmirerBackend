@@ -20,6 +20,7 @@ use App\Http\Controllers\LoginSmsController;
 use Laravel\Sanctum\Sanctum;
 use App\Http\Controllers\PlaceOrderController;
 use App\Http\Controllers\placeOrderFlowController;
+use App\Http\Controllers\razorPayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,4 +116,10 @@ Route::middleware('auth:sanctum')->post('/changeNumberOtpVerify',[changePhoneNum
 //...........................................   Nimbus Deleivery Api.................................................................//
 //Nimbus post to initiate delievery
 
-Route::middleware('auth:sanctum')->post('/NimbusShippingStart',[placeOrderFlowController::class,'createOrder'])->name('nimbus-shipping-start');
+Route::middleware('auth:sanctum')->post('/NimbusShippingStart',[placeOrderFlowController::class,'createOrder'])->name('nimbus-shipping-start');          
+
+//.....................................................RazorPay API integration......................................................//
+
+
+Route::middleware('auth:sanctum')->post('/razorPayStoreApi',[razorPayController::class,'store'])->name('razorpayStoreAPI');
+Route::middleware('auth:sanctum')->post('/razorPayStoreApi',[razorPayController::class,'createOrder'])->name('razorpayStoreAPI');
