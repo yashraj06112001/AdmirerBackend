@@ -122,4 +122,4 @@ Route::middleware('auth:sanctum')->post('/NimbusShippingStart',[placeOrderFlowCo
 
 
 Route::middleware('auth:sanctum')->post('/razorPayStoreApi',[razorPayController::class,'store'])->name('razorpayStoreAPI');
-Route::middleware('auth:sanctum')->post('/razorPayStoreApi',[razorPayController::class,'createOrder'])->name('razorpayStoreAPI');
+Route::middleware('auth:sanctum')->post('/razorPayCreateOrderApi',[razorPayController::class,'createOrder'])->name('razorpayStoreAPI');
