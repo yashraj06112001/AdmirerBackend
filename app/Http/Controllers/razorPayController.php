@@ -14,60 +14,60 @@ class razorPayController extends Controller
     //
     public function store(Request $request)
     {
-        $input = $request->all();
-        Log::info('Razorpay payment input received', ['input' => $input]);
+        Log::info('Incoming Razorpay payment request', ['input' => $request->all()]);
     
-        $razorpayKey = config('razorpay.razorpay_key_id');
-        $razorpaySecretKey = config('razorpay.razorpay_secret_key');
-        $api = new Api($razorpayKey, $razorpaySecretKey);
-        Log::info('Initialized Razorpay API');
+        $validated = $request->validate([
+            'razorpay_payment_id' => 'required|string',
+            'razorpay_order_id'   => 'required|string',
+            'razorpay_signature'  => 'required|string',
+        ]);
     
-        if (!empty($input['razorpay_payment_id'])) {
-            try {
-                // Step 1: Verify Signature
-                $attributes = [
-                    'razorpay_order_id'   => $input['razorpay_order_id'],
-                    'razorpay_payment_id' => $input['razorpay_payment_id'],
-                    'razorpay_signature'  => $input['razorpay_signature']
-                ];
-                Log::info('Verifying payment signature', ['attributes' => $attributes]);
+        try {
+            $api = new Api(
+                config('razorpay.razorpay_key_id'),
+                config('razorpay.razorpay_secret_key')
+            );
+            Log::info('Razorpay API initialized');
     
-                $api->utility->verifyPaymentSignature($attributes);
-                Log::info('Signature verified successfully');
+            $api->utility->verifyPaymentSignature($validated);
+            Log::info('Payment signature verified', ['validated' => $validated]);
     
-                // Step 2: Fetch the payment
-                $payment = $api->payment->fetch($input['razorpay_payment_id']);
-                Log::info('Fetched payment details from Razorpay', ['payment' => $payment->toArray()]);
+            $payment = $api->payment->fetch($validated['razorpay_payment_id']);
+            Log::info('Payment fetched from Razorpay', ['payment' => $payment->toArray()]);
     
-                // Step 3: Check if already captured
-                if ($payment['status'] !== 'captured') {
-                    $captureAmount = $payment['amount'];
-                    $payment->capture(['amount' => $captureAmount]);
-                    Log::info('Captured payment', ['amount' => $captureAmount]);
-                } else {
-                    Log::info('Payment already captured');
-                }
-    
-                Session::put('success', 'Payment verified and successful.');
-                Log::info('Payment process completed successfully');
-                return redirect()->back();
-    
-            } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
-                Log::error('Signature verification failed', ['exception' => $e->getMessage()]);
-                Session::put('error', 'Payment signature verification failed.');
-                return redirect()->back();
-            } catch (\Exception $e) {
-                Log::error('Payment processing failed', ['exception' => $e->getMessage()]);
-                Session::put('error', $e->getMessage());
-                return redirect()->back();
+            if ($payment['status'] !== 'captured') {
+                $payment->capture(['amount' => $payment['amount']]);
+                Log::info('Payment captured successfully', ['amount' => $payment['amount']]);
+            } else {
+                Log::info('Payment already captured');
             }
-        }
     
-        Log::warning('Invalid payment request - razorpay_payment_id not found');
-        Session::put('error', 'Invalid payment request');
-        return redirect()->back();
-    }
-    // Handle creating a new Razorpay order
+            Log::info('Payment process completed successfully');
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Payment verified and completed successfully.',
+                'payment_id' => $payment['id'],
+                'order_id' => $validated['razorpay_order_id'],
+            ]);
+    
+        } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
+            Log::error('Signature verification failed', ['error' => $e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Payment signature verification failed.'
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Unexpected error during payment processing', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Payment failed. Please try again.',
+            ], 500);
+        }
+    }    // Handle creating a new Razorpay order
     public function createOrder(Request $request)
     {
         $validated = $request->validate([
