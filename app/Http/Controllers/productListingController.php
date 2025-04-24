@@ -66,16 +66,25 @@ class productListingController extends Controller
         $productQuery = Product::leftJoin("description", "products.id", "=", "description.p_id")
         ->leftJoin('subcategory','subcategory.id','=','products.subcat_id')
         ->leftJoin('image as img','img.p_id','=','products.product_code')
-        ->select("products.product_name","products.discount","products.price","products.cat_id","subcategory.sub_cat_name","products.id","products.subcat_id", "description.description",'img.image')
+        ->select("products.product_name","products.discount","products.price","products.cat_id","subcategory.sub_cat_name","products.id","products.subcat_id", "description.description",DB::raw('MIN(img.image) as image'))
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) >= ?', [$minPrice])
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) <= ?', [$maxPrice])
         ->where('products.cat_id', '=',$catId)
         ->where('products.status','=','Active')
-        ->distinct('products.id');
+        ->groupBy(
+            "products.product_name",
+            "products.discount",
+            "products.price",
+            "products.cat_id",
+            "subcategory.sub_cat_name",
+            "products.id",
+            "products.subcat_id",
+            "description.description"
+        );
         
         // Conditionally add subcategory filter
         if ($subCatId) {
-            $productQuery->where('products.subcat_id', $subCatId);
+            $productQuery->where('products.subcat_id','=', $subCatId);
         }
         
         $productCompleteDetails = $productQuery->get()->map(function ($item) {
