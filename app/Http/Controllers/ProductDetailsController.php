@@ -84,7 +84,7 @@ class ProductDetailsController extends Controller
         $productData['discount_percent'] = $discountPercent;
 
         $images = DB::table('image')
-            ->where('p_id', $product->product_code)
+            ->where('p_id', '=',$product->product_code)
             ->where('status', 'Active')
             ->get()
             ->map(function ($img) {
