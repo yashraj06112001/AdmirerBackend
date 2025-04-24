@@ -90,7 +90,7 @@ class ProductDetailsController extends Controller
             ->map(function ($img) {
                 return [
                     'id' => $img->id,
-                    'image' => asset('asset/image/product/' . $img->image)
+                    'image' =>$img->image
                 ];
             });
 
