@@ -94,6 +94,7 @@ if ($addressFlat) {
             'city'     => $validated['city'],
             'zipcode'  => $validated['pincode'],
             'state'    => $stateId,
+            'addr_type'=>$validated['addressType']
         ]); 
     }
     else{
