@@ -118,7 +118,7 @@ class ProductDetailsController extends Controller
                     ->orderBy('set_seq', 'asc')
                     ->value('image');
 
-                $imageUrl = $img ? asset('asset/image/product/' . $img) : null;
+                $imageUrl = $img ? $img : null;
   
                     $price = (float) $prod->price;         // Main price
                     $actualPrice = (float) $prod->discount; // Actual price (after discount)
