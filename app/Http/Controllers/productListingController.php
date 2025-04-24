@@ -70,7 +70,8 @@ class productListingController extends Controller
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) >= ?', [$minPrice])
         ->whereRaw('CAST(products.discount AS DECIMAL(10,2)) <= ?', [$maxPrice])
         ->where('products.cat_id', '=',$catId)
-        ->where('products.status','=','Active');
+        ->where('products.status','=','Active')
+        ->distinct('products.id');
         
         // Conditionally add subcategory filter
         if ($subCatId) {
