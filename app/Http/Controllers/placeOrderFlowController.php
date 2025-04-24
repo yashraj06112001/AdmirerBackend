@@ -19,7 +19,7 @@ class placeOrderFlowController extends Controller
        $products=DB::table('add_cart as ac')
        ->leftJoin('products as p','p.id','=','ac.pid')
        ->leftJoin('image as img', 'img.p_id','=','p.id')
-       ->select('p.id as id','p.product_name','ac.quantity as quantity','img.image as img')
+       ->select('p.id as id','p.product_name','ac.quantity as quantity','img.image as img','p.discount as discount')
        ->where('ac.user_id','=',$userId)
        ->where('ac.status','=','Active')
        ->get()
