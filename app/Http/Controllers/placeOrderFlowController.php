@@ -89,7 +89,7 @@ class placeOrderFlowController extends Controller
             "order_id"=>$orderID,
             "productid"=>$product->id,
             "gst"=>$gst,
-            "price"=>$amount,
+            "price"=>$product->discount,
             "quantity"=>$product->quantity,
             "payment_type"=>$paymentType,
             "time"=>now()->toTimeString(),
