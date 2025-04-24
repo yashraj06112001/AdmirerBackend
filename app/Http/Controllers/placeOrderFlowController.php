@@ -88,7 +88,7 @@ class placeOrderFlowController extends Controller
             "user_id"=>$id,
             "order_id"=>$orderID,
             "productid"=>$product->id,
-            "gst"=>$gst,
+            "gst"=>$this->createGST($product->discount),
             "price"=>$product->discount,
             "quantity"=>$product->quantity,
             "payment_type"=>$paymentType,
