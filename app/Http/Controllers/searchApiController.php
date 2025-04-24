@@ -8,19 +8,24 @@ class searchApiController extends Controller
 {
     //
     public function search(Request $request)
-    {
-        $query = $request->input('q');
+    {$query = $request->input('q');
 
         // Fuzzy search
         $results = Product::search($query, function ($tnt, $query) {
             $tnt->fuzziness = true;
             return $tnt->search($query);
         })->get();
-
-        // Return only product names
-        $productNames = $results->pluck('product_name');
-
-        return response()->json($productNames);
+    
+        // Return array of product objects
+        $products = $results->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'product_name' => $product->product_name,
+                'product_code' => $product->product_code ?? null, // in case you want to include it
+            ];
+        });
+    
+        return response()->json($products);
     }
     
 }

@@ -12,6 +12,7 @@ class Product extends Model
         return [
             'id' => $this->id,
             'product_name' => $this->product_name,
+            'product_id'=>$this->id
         ];
     }
     public function cart()
