@@ -86,7 +86,7 @@ if ($addressFlat) {
         DB::table('user')
         ->where('id', $id)
         ->update([
-            'fistname'=>$validated['firstname'],
+            'firstname'=>$validated['firstname'],
             'lastname'=>$validated['lastname'],
             'flat'     => $validated['flat'],
             'street'   => $validated['street'],
