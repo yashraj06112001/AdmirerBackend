@@ -127,7 +127,7 @@ class WishlistController extends Controller
             }
     
             $product->discount_percent = $discountPercent;
-            $product->image_url = 'https://admirer.in/image/product/' . $product->image;
+            $product->image_url = 'https://admirer.in/asset/image/product/' . $product->image;
           //  $product->image_url = asset('image/product/' . $product->image); // ✅ base URL added
     
             return $product;

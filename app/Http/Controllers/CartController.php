@@ -97,7 +97,7 @@ class CartController extends Controller
                     'avg_rating'         => $product->avg_rating,
                     'quantity'           => $product->cart->quantity ?? 0,
                     'checked'            => $product->cart->checked ?? 0,
-                    'image'              => $product->image ? url('asset/image/product/' . $product->image->image) : null,
+                    'image'              => $product->image ? 'https://admirer.in/asset/image/product/' . $product->image->image : null,
                     'stock'              => $product->stock,
                     'in_stock'           => $product->in_stock,
                     'symbol'             => $product->sizeClass->symbol ?? null,
