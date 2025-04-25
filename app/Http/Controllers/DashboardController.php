@@ -165,8 +165,13 @@ public function recentOrder(Request $request)
     foreach ($orderIds as $orderId) {
         $orderDetails = DB::table('order_details as od')
             ->leftJoin('products as p', 'od.productid', '=', 'p.id')
-            ->leftJoin('image as img','img.p_id','=','p.product_code')
             ->leftJoin('description as d','p.id','=','d.p_id')
+            ->leftJoin(DB::raw('(SELECT i1.* FROM image i1 
+                              WHERE i1.id = (SELECT MIN(i2.id) FROM image i2 WHERE i2.p_id = i1.p_id)
+                             ) as img'), 
+                function($join) {
+                    $join->on('p.product_code', '=', 'img.p_id');
+                })
             ->where('od.order_id', '=',$orderId)
             ->select([
                 'od.*', // Select all columns from order_details
