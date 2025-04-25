@@ -165,12 +165,14 @@ public function recentOrder(Request $request)
     foreach ($orderIds as $orderId) {
         $orderDetails = DB::table('order_details as od')
             ->leftJoin('products as p', 'od.productid', '=', 'p.id')
+            ->leftJoin('image as img','img.p_id','=','p.product_code')
             ->leftJoin('description as d','p.id','=','d.p_id')
             ->where('od.order_id', '=',$orderId)
             ->select([
                 'od.*', // Select all columns from order_details
                 'p.product_name as product_name', // Assuming 'products' has 'name' column
-                'd.description as product_description' // Add other product fields if needed
+                'd.description as product_description', // Add other product fields if needed
+                'img.image as product_image' 
             ])
             ->get()
             ->map(function ($item) {
@@ -184,7 +186,8 @@ public function recentOrder(Request $request)
                     'payment_status' => $item->payment_status,
                     'date' => $item->date,
                     'time' => $item->time,
-                    'product_image' => $item->productimage,
+                    'product_image' => $item->product_image,
+                    
                     // Add any other fields you need
                 ];
             });
@@ -203,8 +206,9 @@ public function orderDetail(Request $request)
    $id=$request->id;
    $result=DB::table('order_details as od')
    ->leftJoin('products as p','od.productid','=','p.id')
+   ->leftJoin('image as img','img.p_id','=','p.product_code')
    ->leftJoin('description as des','p.id','=','des.p_id')
-   ->select('od.price','od.order_id','od.quantity','od.payment_type','od.date','od.time','p.product_name','des.description')
+   ->select('od.price','od.order_id','od.quantity','od.payment_type','od.date','od.time','p.product_name','des.description','img.image')
    ->where('od.order_id','=',$id)
    ->get();
 

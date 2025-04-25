@@ -219,7 +219,7 @@ class CartController extends Controller
 
        $billingAddress=DB::table('user as u')
        ->leftJoin('state_list as s','s.id','=','u.state')
-       ->select('u.firstname','u.lastname','u.flat','u.street','u.locality','u.city','u.zipcode','u.addr_type',
+       ->select('u.firstname as first_name','u.lastname as last_name','u.flat','u.street','u.locality','u.city','u.zipcode as zip_code','u.addr_type',
        's.state',)
        ->where('u.id','=',$id)
        ->get();
