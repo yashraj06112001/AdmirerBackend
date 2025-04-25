@@ -211,8 +211,15 @@ public function orderDetail(Request $request)
    $id=$request->id;
    $result=DB::table('order_details as od')
    ->leftJoin('products as p','od.productid','=','p.id')
-   ->leftJoin('image as img','img.p_id','=','p.product_code')
    ->leftJoin('description as des','p.id','=','des.p_id')
+   ->leftJoin(DB::raw('(SELECT MIN(id) as min_id, p_id FROM image GROUP BY p_id) as first_img'), 
+   function($join) {
+       $join->on('first_img.p_id', '=', 'p.product_code');
+   })
+->leftJoin('image as img', function($join) {
+   $join->on('img.id', '=', 'first_img.min_id')
+        ->on('img.p_id', '=', 'first_img.p_id');
+})
    ->select('od.price','od.order_id','od.quantity','od.payment_type','od.date','od.time','p.product_name','des.description','img.image')
    ->where('od.order_id','=',$id)
    ->get();
