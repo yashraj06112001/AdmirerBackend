@@ -31,29 +31,28 @@ class ProductCategoryController extends Controller
     }
 
     public function PriceCategory(Request $request)
-    {   $minPrice = DB::table('products')
-        ->where('status', '!=', 'inactive') // Exclude inactive products
-        ->whereNotNull('discount') // Ensure discount is not null
-        ->where('discount', '!=', '') // Ensure discount is not empty
-        ->selectRaw('MIN(CAST(discount AS SIGNED)) as min_discount') // Convert VARCHAR to integer
-        ->value('min_discount'); 
-        // If you want to return 0 when no discounts exist instead of null:
-       $minPrice = $minPrice ?? 0;
-       $maxPrice = DB::table('products')
-    ->where('status', '!=', 'inactive') // Skip inactive products
-    ->whereNotNull('discount') // Ensure discount is not NULL
-    ->where('discount', '!=', '') // Skip empty strings
-    ->selectRaw('MAX(CAST(discount AS SIGNED)) as max_discount') // Convert VARCHAR → INT & get MAX
-    ->value('max_discount'); // Retrieve the result directly
+    {   
+        $query = DB::table('products')
+        ->where('status', '!=', 'inactive')
+        ->whereNotNull('discount')
+        ->where('discount', '!=', '');
 
-// If no valid discounts found, default to 0 (optional)
-    $maxPrice = $maxPrice ?? 0;
+    // Add subcat_id condition if provided
+    if (!empty($subcatId)) {
+        $query->where('subcat_id', $subcatId);
+    }
 
-        $priceRange=[
-        "minPrice"=>$minPrice,
+    // Clone the query to get min and max separately
+    $minPrice = (clone $query)->selectRaw('MIN(CAST(discount AS SIGNED)) as min_discount')->value('min_discount') ?? 0;
+    $maxPrice = (clone $query)->selectRaw('MAX(CAST(discount AS SIGNED)) as max_discount')->value('max_discount') ?? 0;
+
+    $priceRange = [
+        "minPrice" => $minPrice,
         "maxPrice" => $maxPrice
-        ];
-        return response()->json($priceRange);
+    ];
+
+    return response()->json($priceRange);
+
     }
 
 
