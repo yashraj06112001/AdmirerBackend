@@ -31,7 +31,12 @@ class ProductCategoryController extends Controller
     }
 
     public function PriceCategory(Request $request)
-    {  $subcatId = $request->query('subcatId');
+    {   $catId=$request->query('subcatId');
+        $subcatName = $request->query('subcatName');
+        $subcatId = DB::table('subcategory')
+        ->where('cat_id', $catId)
+        ->where('sub_cat_name', $subcatName)
+        ->value('id');
         $query = DB::table('products')
         ->where('status', '!=', 'inactive')
         ->whereNotNull('discount')
@@ -39,7 +44,7 @@ class ProductCategoryController extends Controller
 
     // Add subcat_id condition if provided
     if (!empty($subcatId)) {
-        $query->where('subcat_id', $subcatId);
+        $query->where('subcat_id', '=',$subcatId);
     }
 
     // Clone the query to get min and max separately
