@@ -31,7 +31,7 @@ class ProductCategoryController extends Controller
     }
 
     public function PriceCategory(Request $request)
-    {   
+    {  $subcatId = $request->query('subcatId');
         $query = DB::table('products')
         ->where('status', '!=', 'inactive')
         ->whereNotNull('discount')
