@@ -31,7 +31,7 @@ class ProductCategoryController extends Controller
     }
 
     public function PriceCategory(Request $request)
-    {   $catId=$request->query('subcatId');
+    {   $catId=$request->query('catId');
         $subcatName = $request->query('subcatName');
         $subcatId = DB::table('subcategory')
         ->where('cat_id', $catId)
